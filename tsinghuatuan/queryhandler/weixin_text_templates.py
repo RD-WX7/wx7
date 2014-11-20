@@ -30,7 +30,7 @@ def get_text_time_standard(dt):
 
 
 def get_text_ticket_pic(ticket):
-    return QRCODE_URL + str(ticket.unique_id)
+    return QRCODE_URL + str(ticket.unique_id) +"/"
 
 
 def get_text_link(href, title):

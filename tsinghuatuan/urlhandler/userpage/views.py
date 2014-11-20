@@ -8,7 +8,30 @@ from urlhandler.settings import STATIC_URL
 import urllib, urllib2
 import datetime
 from django.utils import timezone
+import qrcode
+from PIL import Image
 
+def get_qr_code(request, qrmsg, qrtype):
+    if request.GET:
+        return HttpResponse(request.GET.get('test', 'hello') + '\r\n' + qrmsg)
+    qr = qrcode.QRCode(
+        version=1,
+        error_correction=qrcode.constants.ERROR_CORRECT_L,
+        box_size=10,
+        border=0
+    )
+    qr.add_data(qrmsg)
+    qr.make(fit=True)
+    img = qr.make_image()
+    response = HttpResponse(content_type='image/png')
+    if qrtype == 'wide':
+        (x, y) = img.size
+        newImg = Image.new('RGBA', (x * 7, x), (255, 255, 255))
+        newImg.paste(img, (x * 3, 0))
+        newImg.save(response, 'png')
+    else:
+        img.save(response, 'png')
+    return response
 
 def home(request):
     return render_to_response('mobile_base.html')
@@ -27,7 +50,6 @@ def validate_view(request, openid):
     request_url = 'http://auth.igeek.asia/v1/time'
     res_data = urllib2.urlopen(request_url)
     res = res_data.read()
-    print res
 
     return render_to_response('validation.html', {
         'openid': openid,
@@ -175,7 +197,7 @@ def ticket_view(request, uid):
     if act_endtime < now:#表示活动已经结束
         ticket_status = 3
     ticket_seat = ticket[0].seat
-    act_photo = "http://wx7.igeek.asia/fit/"+uid
+    act_photo = "http://wx7.igeek.asia/q/fit/"+uid+"/"
 
     variables=RequestContext(request,{'act_id':act_id, 'act_name':act_name,'act_place':act_place, 'act_begintime':act_begintime,
                                       'act_endtime':act_endtime,'act_photo':act_photo, 'ticket_status':ticket_status,
