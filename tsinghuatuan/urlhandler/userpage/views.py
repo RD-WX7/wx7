@@ -3,13 +3,24 @@
 from django.http import HttpResponse, Http404
 from django.template import RequestContext
 from django.shortcuts import render_to_response
-from urlhandler.models import User, Activity, Ticket
+from urlhandler.models import User, Activity, Ticket, Seat
 from urlhandler.settings import STATIC_URL
 import urllib, urllib2
 import datetime
 from django.utils import timezone
 import qrcode
 from PIL import Image
+
+def create_user():
+    for i in range(3001):
+        if (i < 10):
+            User.objects.create(weixin_id='test000' + str(i), stu_id=0, status=1)
+        elif (i < 100):
+            User.objects.create(weixin_id='test00' + str(i), stu_id=0, status=1)
+        elif (i < 1000):
+            User.objects.create(weixin_id='test0' + str(i), stu_id=0, status=1)
+        else:
+            User.objects.create(weixin_id='test' + str(i), stu_id=0, status=1)
 
 def get_qr_code(request, qrmsg, qrtype):
     if request.GET:
@@ -32,6 +43,14 @@ def get_qr_code(request, qrmsg, qrtype):
     else:
         img.save(response, 'png')
     return response
+
+def find_me(request, openid):
+    variables=RequestContext(request,{'openid':openid})
+    return render_to_response('m_findme.html', variables)
+	
+def find_you(request, openid):
+    variables=RequestContext(request,{'openid':openid})
+    return render_to_response('m_findyou.html', variables)
 
 def home(request):
     return render_to_response('mobile_base.html')
@@ -183,6 +202,7 @@ def details_view(request, activityid):
 
 def ticket_view(request, uid):
     ticket = Ticket.objects.filter(unique_id=uid)
+    row = ticket[0].row
     if not ticket.exists():
         raise Http404  #current activity is invalid
     activity = Activity.objects.filter(id=ticket[0].activity_id)
@@ -192,21 +212,30 @@ def ticket_view(request, uid):
     act_begintime = activity[0].start_time
     act_endtime = activity[0].end_time
     act_place = activity[0].place
+    act_menu = activity[0].menu_url
     ticket_status = ticket[0].status
     now = datetime.datetime.now()
     if act_endtime < now:#表示活动已经结束
         ticket_status = 3
     ticket_seat = ticket[0].seat
     act_photo = "http://wx7.igeek.asia/q/fit/"+uid+"/"
+    data = {'act_id':act_id, 'act_name':act_name,'act_place':act_place, 'act_begintime':act_begintime, 
+            'act_endtime':act_endtime,'act_photo':act_photo, 'ticket_status':ticket_status,'ticket_seat':ticket_seat,
+            'ticket_row':row,'ticket_id':uid,'act_key':act_key, 'act_menu':act_menu}
+			
+    seats = Seat.objects.filter(status = 1, activity_id=act_id)
+    data['seat_number'] = seats.count()
+    data['seat'] = ''
+    for seat in seats:
+        data['seat'] += 's' + seat.seat_id
+    data['seat'] += 's'
 
-    variables=RequestContext(request,{'act_id':act_id, 'act_name':act_name,'act_place':act_place, 'act_begintime':act_begintime,
-                                      'act_endtime':act_endtime,'act_photo':act_photo, 'ticket_status':ticket_status,
-                                      'ticket_seat':ticket_seat,
-                                      'act_key':act_key})
+    variables=RequestContext(request, data)
     #return render_to_response('activityticket.html', variables)
     return render_to_response('m_activityticket.html', variables)
 
 def help_view(request):
+    #create_user();
     variables=RequestContext(request,{'name':u'“紫荆之声”'})
     return render_to_response('help.html', variables)
 
@@ -226,3 +255,42 @@ def helpclub_view(request):
 def helplecture_view(request):
     variables=RequestContext(request,{})
     return render_to_response('help_lecture.html', variables)
+	
+	
+def selection_view(request): 
+    uid = request.POST['uid']
+    print uid
+    area = request.POST['area']
+    print area
+    row = request.POST['row']
+    print row
+    col = request.POST['col']
+    print col
+    act_id = request.POST['act_id']
+    print act_id
+    if row == str(-1):
+        try:
+            print 'random'
+            activity = Activity.objects.filter(id = act_id)
+            seats = Seat.objects.filter(activity_id = activity[0].id, status = 1)
+            seat = seats[0]
+            seat.status = 0
+            seat.save()		
+            ticket = Ticket.objects.filter(unique_id = uid)
+            ticket.update(row=seat.row, col=seat.col,seat=seat.area, activity=activity[0])
+            return HttpResponse('SUCCESS')
+        except:
+            return HttpResponse('ERROR')
+    try:
+        activity = Activity.objects.filter(id = act_id)
+        seats = Seat.objects.filter(area = area, row = row, col = col, activity_id = activity[0].id, status = 1)	#potential error
+        if seats.exists():
+            print 'suc'
+            seats.update(status = 0)
+            ticket = Ticket.objects.filter(unique_id = uid)
+            ticket.update(row = row, col = col,seat = area, activity=activity[0])
+            return HttpResponse('SUCCESS')
+        return HttpResponse('REJECT')
+    except:
+        return HttpResponse('ERROR')
+    

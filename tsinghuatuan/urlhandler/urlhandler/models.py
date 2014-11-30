@@ -38,11 +38,23 @@ class Ticket(models.Model):
     activity = models.ForeignKey(Activity)
     status = models.IntegerField()
     seat = models.CharField(max_length=255)
+    row = models.IntegerField(default=0, null=True)
+    col = models.IntegerField(default=0,  null=True)
     # Something about isUsed
     # 0: ticket order is cancelled
     # 1: ticket order is valid
-    # 2: ticket is used
+    # 2: ticket is used	
 
+class Seat(models.Model):
+    seat_id = models.CharField(max_length=255)  #area_row_col
+    row = models.IntegerField()
+    col = models.IntegerField()
+    activity = models.ForeignKey(Activity)
+    area = models.CharField(max_length=255)
+    status = models.IntegerField() #0:seat is inavailable  1:seat is available
+	
+	
+	
 '''
 class UserSession(models.Model):
     stu_id = models.CharField(max_length=255)

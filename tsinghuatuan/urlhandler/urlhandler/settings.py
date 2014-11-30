@@ -60,12 +60,12 @@ if 'SERVER_SOFTWARE' in os.environ:
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.mysql',
-            'NAME': 'NYenZfWMVWuqtUGNuQsI',
-            'USER': '6jIVijhGUVreXBNI6jYzZGlt',
-            'PASSWORD': 'AxB1w67ddB4cwkCLw3gQSoBjGUcICUL3',
-            'HOST': 'sqld.duapp.com',
-            'PORT': '4050',
-            }
+            'NAME': 'wx7_db',
+            'USER': 'wx7',
+            'PASSWORD': 'IimJw8vaMqsaSogn',
+            'HOST': 'db.igeek.asia',
+            'PORT': '3306',
+        }
     }
     #con = MySQLdb.Connect(host = "sqld.duapp.com",
    #                       port = 4050,
@@ -78,21 +78,21 @@ elif (os.environ.get('USER', '') == 'ssastadmin') or ('SSAST_DEPLOYMENT' in os.e
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.mysql',
-            'NAME': 'tsinghuatuan',
-            'USER': 'tsinghuatuan',
-            'PASSWORD': 'MA4vXQSAdcWkoZfI',
-            'HOST': '',
-            'PORT': '',
-            }
+            'NAME': 'wx7_db',
+            'USER': 'wx7',
+            'PASSWORD': 'IimJw8vaMqsaSogn',
+            'HOST': 'db.igeek.asia',
+            'PORT': '3306',
+        }
     }
 else:
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.mysql',
-            'NAME': 'wx7_test',
+            'NAME': 'wx7_db',
             'USER': 'wx7',
             'PASSWORD': 'IimJw8vaMqsaSogn',
-            'HOST': '127.0.0.1',
+            'HOST': 'db.igeek.asia',
             'PORT': '3306',
         }
     }
@@ -115,7 +115,7 @@ SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.6/howto/static-files/
 
-STATIC_URL = '/static/'
+STATIC_URL = '/static1/'
 
 #STATIC_ROOT = os.path.join(BASE_DIR, 'static').replace('\\', '/')
 
@@ -138,5 +138,3 @@ TEMPLATE_LOADERS = (
     'django.template.loaders.app_directories.Loader',
 #     'django.template.loaders.eggs.Loader',
 )
-
-

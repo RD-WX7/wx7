@@ -14,6 +14,48 @@ from queryhandler.handler_check_templates import *
 from queryhandler.weixin_msg import *
 from weixinlib.settings import WEIXIN_EVENT_KEYS
 
+def check_find_me(msg):
+    print msg
+    return handler_check_text(msg, ['找我']) or handler_check_event_click(msg, [WEIXIN_EVENT_KEYS['find_me']])
+
+def response_find_me(msg):
+    print 'find_me'
+    fromuser = get_msg_from(msg)
+    user = get_user(fromuser)
+    if user is None:
+        return get_reply_text_xml(msg, get_text_unbinded_exam_ticket(fromuser))
+    return get_reply_single_news_xml(msg, get_item_dict(
+        title='找我',
+        description='找我功能简介',
+        pic_url= 'http://www.pingjiata.com/uploadfiles/20140418/1397818902.jpg',
+        url='http://wx7.igeek.asia/u/findme/' + fromuser
+    ))
+
+def check_find_you(msg):
+    return handler_check_text(msg, ['找你']) or handler_check_event_click(msg, [WEIXIN_EVENT_KEYS['find_you']])
+
+def response_find_you(msg):
+    fromuser = get_msg_from(msg)
+    user = get_user(fromuser)
+    if user is None:
+        return get_reply_text_xml(msg, get_text_unbinded_exam_ticket(fromuser))
+    return get_reply_single_news_xml(msg, get_item_dict(
+        title='找你',
+        description='找你功能简介',
+		pic_url= 'http://www.pingjiata.com/uploadfiles/20140418/1397818902.jpg',
+        url=s_reverse_find_you(fromuser)
+    ))
+
+def check_get_info(msg):
+    return handler_check_text(msg, ['讲座']) or handler_check_event_click(msg, [WEIXIN_EVENT_KEYS['info_lecture']])
+
+def response_get_info(msg):
+    return get_reply_single_news_xml(msg, get_item_dict(
+        title='讲座名称',
+        description='这是一条讲座',
+        pic_url= 'http://images.china.cn/attachement/jpg/site1000/20101111/00016c42b2230e4616e14c.jpg',
+        url='http://www.tsinghua.edu.cn/publish/xtw/4837/'
+    ))
 
 def get_user(openid):
     try:
@@ -218,7 +260,9 @@ def book_ticket(user, key, now):
                 activity=activity,
                 unique_id=random_string,
                 status=1,
-                seat=next_seat
+                seat=next_seat,
+                row=0,
+                col=0
             )
             return ticket
         elif tickets[0].status == 0:
@@ -260,7 +304,21 @@ def response_cancel_ticket(msg):
                 ticket = tickets[0]
                 ticket.status = 0
                 ticket.save()
+                print ticket.row
+                print ticket.col
+                print ticket.seat
                 Activity.objects.filter(id=activity.id).update(remain_tickets=F('remain_tickets')+1)
+                seats = Seat.objects.filter(area=ticket.seat, row=ticket.row, col=ticket.col, activity_id=ticket.activity.id)
+                print seats
+                if seats.exists():
+                    seats.update(status=1)
+                    print seats[0].status
+                    ticket.row=0
+                    ticket.col=0
+                    ticket.save()
+                    print 'succ'
+                else:
+                    return get_reply_text_xml(msg, get_text_fail_cancel_ticket())
                 return get_reply_text_xml(msg, get_text_success_cancel_ticket())
             else:
                 return get_reply_text_xml(msg, get_text_fail_cancel_ticket())

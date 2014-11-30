@@ -21,4 +21,11 @@ def s_reverse_help():
 def s_reverse_activity_menu(actid):
     return SITE_DOMAIN + reverse('userpage.views.activity_menu_view', kwargs={'actid': actid})
 
+def s_reverse_find_me(openid):
+    return SITE_DOMAIN + reverse('userpage.views.find_me', kwargs={'openid': openid})
+
+def s_reverse_find_you(openid):
+    return SITE_DOMAIN + reverse('userpage.views.find_you', kwargs={'openid': openid})
+
+
 

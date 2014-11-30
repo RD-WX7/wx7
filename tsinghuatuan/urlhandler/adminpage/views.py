@@ -14,7 +14,7 @@ from django.views.decorators.csrf import csrf_protect, csrf_exempt
 from django.db.models import F
 import urllib
 import urllib2
-from urlhandler.models import Activity, Ticket
+from urlhandler.models import Activity, Ticket, Seat
 from urlhandler.models import User as Booker
 from weixinlib.custom_menu import get_custom_menu, modify_custom_menu, add_new_custom_menu, auto_clear_old_menus
 from weixinlib.settings import get_custom_menu_with_book_acts, WEIXIN_BOOK_HEADER
@@ -170,13 +170,38 @@ def str_to_datetime(strg):
 
 def activity_create(activity):
     preDict = dict()
-    for k in ['name', 'key', 'description', 'place', 'pic_url', 'seat_status', 'total_tickets']:
+    for k in ['name', 'key', 'description', 'place', 'pic_url', 'seat_status', 'total_tickets', 'menu_url']:
         preDict[k] = activity[k]
     for k in ['start_time', 'end_time', 'book_start', 'book_end']:
         preDict[k] = str_to_datetime(activity[k])
     preDict['status'] = 1 if ('publish' in activity) else 0
     preDict['remain_tickets'] = preDict['total_tickets']
     newact = Activity.objects.create(**preDict)
+	
+    seat_str = activity['seat-distribution-input']
+    print seat_str
+    seat_str = seat_str[1:].split('s')
+    for item in seat_str:
+        item = item.split('_')
+        if (item[0] == str(1)):
+            area = 'A'
+        elif (item[0] == str(2)):
+            area = 'B'
+        elif (item[0] == str(3)):
+            area = 'C'
+        elif (item[0] == str(4)):
+            area = 'D'
+        row = int(item[1])
+        col = int(item[2])
+        Seat.objects.create(
+            row=row,
+            col=col,
+            activity = newact,
+            status=1,
+            area=area,
+            seat_id=area+'_'+str(row)+'_'+str(col)
+        )
+                   
     return newact
 
 

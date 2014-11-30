@@ -18,6 +18,8 @@ WEIXIN_EVENT_KEYS = {
     'ticket_no_book_recommand': 'TSINGHUA_NO_BOOK_ACTS',
     'ticket_book_header': 'TSINGHUA_BOOK_',
     'modern_figure': 'V1001_MODERN_FIGURE',
+    'find_you': 'TSINGHUA_FIND_YOU',
+    'find_me':'TSINGHUA_FIND_ME'
 }
 
 WEIXIN_CUSTOM_MENU_TEMPLATE = {
@@ -61,15 +63,15 @@ WEIXIN_CUSTOM_MENU_TEMPLATE = {
             "name": "服务",
             "sub_button": [
                 {
-                    "type": "view",
+                    "type": "click",
                     "name": "找你",
-                    "url": "http://www.baidu.com",
+                    "key": WEIXIN_EVENT_KEYS['find_you'],
                     "sub_button": []
                 },
 				{
-                    "type": "view",
+                    "type": "click",
                     "name": "找我",
-                    "url": "http://www.baidu.com",
+                    "key": WEIXIN_EVENT_KEYS['find_me'],
                     "sub_button": []
                 },
 				{

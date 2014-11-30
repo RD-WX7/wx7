@@ -19,15 +19,18 @@ handler_list = [
     {'check': check_no_book_acts_event,     'response': response_no_book_acts},
     {'check': check_get_activity_menu,      'response': response_get_activity_menu},
     {'check': check_xnlhwh,                 'response': response_xnlhwh},
+    {'check': check_get_info,               'response': response_get_info},
+    {'check': check_find_you,               'response': response_find_you},
+    {'check': check_find_me,                'response': response_find_me},
 ]
 
 
 # entry of weixin handler
 def handle_weixin_request(environ):
-    data = urldecode(environ['QUERY_STRING'])
-    if not check_weixin_signature(data['signature'], data['timestamp'], data['nonce']):
-        print '!!!!! Check weixin signature failed !!!!!'
-        return ''
+    #data = urldecode(environ['QUERY_STRING'])
+    #if not check_weixin_signature(data['signature'], data['timestamp'], data['nonce']):
+        #print '!!!!! Check weixin signature failed !!!!!'
+        #return ''
     if environ['REQUEST_METHOD'] == 'GET':
         return data['echostr']
     elif environ['REQUEST_METHOD'] == 'POST':
@@ -42,8 +45,9 @@ def handle_weixin_request(environ):
         try:
             #recognize type of message and return result
             for handler in handler_list:
+                print handler['check']
                 if handler['check'](msg):
-                    print handler['check']
+                    print handler['response']
                     return handler['response'](msg)
         except Exception as e:
             print 'Error occured!!!!!!' + str(e)

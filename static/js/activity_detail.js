@@ -250,6 +250,14 @@ function lockForm() {
     $('#resetBtn').hide();
 }
 
+
+function showPubTipsByStatus(status){
+    if(status < 1){
+        //$('#publishBtn').tooltip({'title': '发布后不能修改“活动名称”、“活动代称”和“订票开始时间”'});
+        $('#saveBtn').tooltip({'title': '暂存后可以“继续修改”'});
+    }
+}
+
 function lockByStatus(status, book_start, start_time, end_time) {
     // true means lock, that is true means disabled
     var statusLockMap = {
@@ -316,13 +324,6 @@ function showPublishByStatus(status, linetime) {
     }
 }
 
-function showPubTipsByStatus(status){
-    if(status < 1){
-        $('#publishBtn').tooltip({'title': '发布后不能修改“活动名称”、“活动代称”和“订票开始时间”'});
-        $('#saveBtn').tooltip({'title': '暂存后可以“继续修改”'});
-    }
-}
-
 function getDateString(tmpDate) {
     return tmpDate.year + '-' + tmpDate.month + '-' + tmpDate.day + ' ' + tmpDate.hour + ':' + tmpDate.minute + ':00';
 }
@@ -381,6 +382,7 @@ function beforeSubmit(formData, jqForm, options) {
         }
     }
     if (lackArray.length > 0) {
+		alert(lackArray);
         setResult('以下字段是必须的，请补充完整后再提交：\r\n' + lackArray.join('、'));
         $('#continueBtn').click(function() {
             showForm();
