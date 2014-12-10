@@ -26,7 +26,26 @@ from django.utils.http import urlquote
 from django.utils.encoding import smart_str
 
 
+def upload_img(request):
+    type_allowed = ['jpg', 'jpeg', 'png']
+    max_size = 2621440
+    save_dir = '/static/img/upload/'
 
+    if (request.method == 'POST'):
+        file = request.FILES['imgFile']
+        if not file.name:
+            return HttpResponse(json.dumps({'error': 1, 'message': u'请选择要上传的文件'}))
+        ext = file.name.split('.').pop()
+        if ext not in type_allowed:
+            return HttpResponse(json.dumps({'error': 1, 'message': u'请请上传后缀为%s的文件'} % ext_allowed))
+        if file.size > max_size:
+            return HttpResponse(json.dumps({'error': 1, 'message': u'上传的文件大小不能超过2.5MB'}))
+        new_file = '%s.%s' % (int(time.time()), ext)
+        fp = open(save_dir + new_file, 'wb+')
+        for chunk in file.chunks():
+            fp.write(chunk)
+        fp.close()
+        return HttpResponse(json.dumps({'error': 0, 'message': save_dir + new_file}))    
 @csrf_protect
 def home(request):
     if not request.user.is_authenticated():
@@ -177,31 +196,44 @@ def activity_create(activity):
     preDict['status'] = 1 if ('publish' in activity) else 0
     preDict['remain_tickets'] = preDict['total_tickets']
     newact = Activity.objects.create(**preDict)
-	
+
     seat_str = activity['seat-distribution-input']
     print seat_str
     seat_str = seat_str[1:].split('s')
-    for item in seat_str:
-        item = item.split('_')
-        if (item[0] == str(1)):
-            area = 'A'
-        elif (item[0] == str(2)):
-            area = 'B'
-        elif (item[0] == str(3)):
-            area = 'C'
-        elif (item[0] == str(4)):
-            area = 'D'
-        row = int(item[1])
-        col = int(item[2])
-        Seat.objects.create(
-            row=row,
-            col=col,
-            activity = newact,
-            status=1,
-            area=area,
-            seat_id=area+'_'+str(row)+'_'+str(col)
-        )
-                   
+    if (activity['seat_status'] == str('1')):
+        for item in seat_str:
+            item = item.split('_')
+            if (item[0] == str(1)):
+                area = 'A'
+            elif (item[0] == str(2)):
+                area = 'B'
+            elif (item[0] == str(3)):
+                area = 'C'
+            elif (item[0] == str(4)):
+                area = 'D'
+            row = int(item[1])
+            col = int(item[2])
+            Seat.objects.create(
+                row=row,
+                col=col,
+                activity = newact,
+                status=1,
+                area=area,
+                seat_id=area+'_'+str(row)+'_'+str(col)
+            )
+    elif (activity['seat_status'] == str('2')):
+        for item in seat_str:
+            item = item.split('_')
+            area = item[0]
+            status = item[1]
+            Seat.objects.create(
+                row = 1,
+                col = 1,
+                activity = newact,
+                status = status,
+                area = area,
+                seat_id=area+'_'+status
+            )             
     return newact
 
 
@@ -245,6 +277,8 @@ def activity_delete(request):
     curact.status = -1
     curact.save()
     #删除后刷新界面
+    seats = Seat.objects.filter(activity_id = int(requestdata.get('activityId', '')))
+    seats.delete()
     return HttpResponse('OK')
 
 
@@ -319,6 +353,7 @@ def activity_post(request):
             activity = activity_create(post)
             rtnJSON['updateUrl'] = s_reverse_activity_detail(activity.id)
         rtnJSON['activity'] = wrap_activity_dict(activity)
+        
         if 'publish' in post:
             updateErr = json.loads(add_new_custom_menu(name=activity.key, key=WEIXIN_BOOK_HEADER + str(activity.id))).get('errcode', 'err')
             if updateErr != 0:

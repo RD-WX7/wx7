@@ -8,13 +8,16 @@
 
 {% block css %}
     <link rel="stylesheet" href="{% static "css/activity_detail.css" %}"/>
-    <link href="https://member.hipiao.com/res/css/buy.css" type="text/css" rel="stylesheet">
+    <link href="{% static "css/buy.css" %}" type="text/css" rel="stylesheet">
+    <link href="{% static "css/basic.css" %}" type="text/css" rel="stylesheet">
+
     <style type="text/css">
-        .selseatbgleftzi {width:800px;height:500px;overflow:auto;position: relative;color:black;}
-        .selseatbgleftzi .af {position: absolute;cursor:pointer;background:url(https://member.hipiao.com/res/images/buy/icon5.gif) no-repeat center;width:22px;height:22px;line-height:22px;margin:0;padding:0;text-align:center;}
-        .selseatbgleftzi .as {position: absolute;background:url(https://member.hipiao.com/res/images/buy/icon4.gif)  no-repeat center;width:22px;height:22px;line-height:22px;margin:0;cursor:pointer;padding:0;text-align:center;}
-        .selseatbgleftzi .ass {position: absolute;cursor:pointer;background:url(https://member.hipiao.com/res/images/buy/icon6.gif)  no-repeat center;width:22px;height:22px;line-height:22px;margin:0;padding:0;text-align:center;}
-        .selseatbgleftzi .anum {position: absolute;color:#123456;font:18px;width:22px;height:22px;line-height:22px;margin:0;padding:0;text-align:center;}
+        .selseatbgleftzi {width:1300px;height:500px;overflow:auto;position: relative;color:black;}
+        .selseatbgleftzi .af {position: absolute;cursor:pointer;background-color:#95a5a6;width:15px;height:15px;line-height:15px;margin:0;padding:0;text-align:center;border-style:solid;border-color:white;border-width: 1px;}
+        .selseatbgleftzi .as {position: absolute;background-color:#3498db;width:15px;height:15px;line-height:15px;margin:0;cursor:pointer;padding:0;text-align:center;border-style:solid;border-color:white;border-width: 1px;}
+        .selseatbgleftzi .anum {position: absolute;color:#123456;width:15px;height:15px;line-height:15px;margin:0;padding:0;text-align:center;cursor:pointer;}
+        .introaf {cursor:pointer;background-color:#95a5a6;width:15px;height:15px;line-height:15px;margin:0;padding:0;text-align:center;border-style:solid;border-color:white;border-width: 1px;}
+        .introas {background-color:#3498db;width:15px;height:15px;line-height:15px;margin:0;cursor:pointer;padding:0;text-align:center;border-style:solid;border-color:white;border-width: 1px;}
     </style>
 {% endblock %}
 
@@ -58,6 +61,7 @@
                 'minute': {{ activity.book_end.minute }}
             },
             'total_tickets': {{ activity.total_tickets }},
+            'menu_url': {{ activity.menu_url }},
             'status': {{ activity.status }}{% else %},
             'status': 0{% endif %}{% if activity.tickets_ready %},
             'checked_tickets': {{ activity.checked_tickets }},
@@ -67,31 +71,425 @@
 
     </script>
 	<script>
-                $("li").click(function(){
-                    var id = $(this).attr("id");
-                    if($(this).attr("class")=="af"){
-                        document.getElementById(id).className="as";
-                        $("#seat-distribution-input").val($("#seat-distribution-input").val()+id);
+    function clickSelect(){
+        var x=document.getElementById("selectArea")
+        if(x.selectedIndex == "0"){
+            $("#seat-distribution-input").val("");
+            $("#input-total_tickets").val(0);
+            $("li").remove();
+            $(".anum").remove();
+            for(var i=1; i<=19; i++){
+                var toppx = 15*(i-1);
+                var txt1 = '<p class="anum" style="top:'+toppx+'px;left:20px;">'+i+'</p>'
+                var txt2 = '<p class="anum" style="top:'+toppx+'px;left:725px;">'+i+'</p>'
+                $("#seatMapData").append(txt1,txt2);
+                if(i==1){
+                    for(var j=1; j<=31; j++){
+                        var toppx = 15*(i-1);
+                        if(j<=5) var leftpx = 65+15*(j+3);
+                        else if(j<=26) var leftpx = 65+15*(j+4);
+                        else var leftpx = 65+15*(j+6);
+                        var txt = '<li id="s1_'+i+'_'+j+'" title="'+i+'排'+j+'号" class="af" style="top:'+toppx+'px;left:'+leftpx+'px;">'+j+'</li>'
+                        $("#seatMapData_ul").append(txt);
                     }
-                    else{
-                        document.getElementById(id).className="af";
-                        $("#seat-distribution-input").val($("#seat-distribution-input").val().replace(id,""));
+                }
+                else if(i==18){
+                    for(var j=1; j<=32; j++){
+                        var toppx = 15*(i-1);
+                        if(j<=5) var leftpx = 65+15*(j+3);
+                        else if(j<=27) var leftpx = 65+15*(j+4);
+                        else var leftpx = 65+15*(j+5);
+                        var txt = '<li id="s1_'+i+'_'+j+'" title="'+i+'排'+j+'号" class="af" style="top:'+toppx+'px;left:'+leftpx+'px;">'+j+'</li>'
+                        $("#seatMapData_ul").append(txt);
                     }
-                    var as = $(".as");                        
-                    $("#input-total_tickets").val(as.length);
-                });
-
-                $(".anum").click(function(){
-                    var row = this.innerHTML;
-                    var seats = document.getElementById("seatMapData").children[0].children;
-                    for(var i = 0; i < seats.length; i++){
-                        if(seats[i].id.match("_"+row+"_") != null){
-                            seats[i].click();
-                        }
+                }
+                else if(i==2){
+                    for(var j=1; j<=34; j++){
+                        var toppx = 15*(i-1);
+                        if(j<=6) var leftpx = 65+15*(j+2);
+                        else if(j<=28) var leftpx = 65+15*(j+3);
+                        else var leftpx = 65+15*(j+4);
+                        var txt = '<li id="s1_'+i+'_'+j+'" title="'+i+'排'+j+'号" class="af" style="top:'+toppx+'px;left:'+leftpx+'px;">'+j+'</li>'
+                        $("#seatMapData_ul").append(txt);
                     }
-                });
-
-
+                }
+                else if(i==17||i==3){
+                    for(var j=1; j<=35; j++){
+                        var toppx = 15*(i-1);
+                        if(j<=7) var leftpx = 65+15*(j+1);
+                        else if(j<=28) var leftpx = 65+15*(j+2);
+                        else var leftpx = 65+15*(j+4);
+                        var txt = '<li id="s1_'+i+'_'+j+'" title="'+i+'排'+j+'号" class="af" style="top:'+toppx+'px;left:'+leftpx+'px;">'+j+'</li>'
+                        $("#seatMapData_ul").append(txt);
+                    }
+                }
+                else if(i==16||i==4){
+                    for(var j=1; j<=38; j++){
+                        var toppx = 15*(i-1);
+                        if(j<=8) var leftpx = 65+15*(j);
+                        else if(j<=30) var leftpx = 65+15*(j+1);
+                        else var leftpx = 65+15*(j+2);
+                        var txt = '<li id="s1_'+i+'_'+j+'" title="'+i+'排'+j+'号" class="af" style="top:'+toppx+'px;left:'+leftpx+'px;">'+j+'</li>'
+                        $("#seatMapData_ul").append(txt);
+                    }
+                }
+                else if(i==5||i==7||i==9||i==11||i==13||i==15){
+                    for(var j=1; j<=39; j++){
+                        var toppx = 15*(i-1);
+                        if(j<=9) var leftpx = 65+15*(j-1);
+                        else if(j<=30) var leftpx = 65+15*(j);
+                        else var leftpx = 65+15*(j+2);
+                        var txt = '<li id="s1_'+i+'_'+j+'" title="'+i+'排'+j+'号" class="af" style="top:'+toppx+'px;left:'+leftpx+'px;">'+j+'</li>'
+                        $("#seatMapData_ul").append(txt);
+                    }
+                }
+                else if(i==19){
+                    for(var j=1; j<=21; j++){
+                        var toppx = 15*(i-1);
+                        var leftpx = 65+15*(j+9);
+                        var txt = '<li id="s1_'+i+'_'+j+'" title="'+i+'排'+j+'号" class="af" style="top:'+toppx+'px;left:'+leftpx+'px;">'+j+'</li>'
+                        $("#seatMapData_ul").append(txt);
+                    }
+                }
+                else{
+                    for(var j=1; j<=40; j++){
+                        var toppx = 15*(i-1);
+                        if(j<=9) var leftpx = 65+15*(j-1);
+                        else if(j<=31) var leftpx = 65+15*(j);
+                        else var leftpx = 65+15*(j+1);
+                        var txt = '<li id="s1_'+i+'_'+j+'" title="'+i+'排'+j+'号" class="af" style="top:'+toppx+'px;left:'+leftpx+'px;">'+j+'</li>'
+                        $("#seatMapData_ul").append(txt);
+                    }
+                }
+            }
+        }
+        else if(x.selectedIndex == "1"){
+            $("#seat-distribution-input").val("");
+            $("#input-total_tickets").val(0);
+            $("li").remove();
+            $(".anum").remove();
+            for(var i=1; i<=22; i++){
+                if(i<=16){
+                    var toppx = 15*(i-1);
+                }
+                else{
+                    var toppx = 15*(i);
+                }
+                var txt1 = '<p class="anum" style="top:'+toppx+'px;left:20px;">'+i+'</p>'
+                var txt2 = '<p class="anum" style="top:'+toppx+'px;left:1025px;">'+i+'</p>'
+                $("#seatMapData").append(txt1,txt2);
+                if(i==1){
+                    var txt1 = '<li id="s2_1_1" title="1排1号" class="af" style="top:0px;left:125px;">1</li>'
+                    var txt2 = '<li id="s2_1_2" title="1排2号" class="af" style="top:0px;left:920px;">2</li>'
+                    $("#seatMapData_ul").append(txt1,txt2);
+                }
+                else if(i==2){
+                    var txt1 = '<li id="s2_2_2" title="2排2号" class="af" style="top:15px;left:125px;">2</li>'
+                    var txt2 = '<li id="s2_2_3" title="2排3号" class="af" style="top:15px;left:920px;">3</li>'
+                    var txt3 = '<li id="s2_2_1" title="2排1号" class="af" style="top:15px;left:110px;">1</li>'
+                    var txt4 = '<li id="s2_2_4" title="2排4号" class="af" style="top:15px;left:935px;">4</li>'
+                    $("#seatMapData_ul").append(txt1,txt2,txt3,txt4);
+                }
+                else if(i==17||i==20){
+                    for(var j=1; j<=50; j++){
+                        var toppx = 15*(i);
+                        if(j<=14) var leftpx = 65+15*(j+4);
+                        else if(j<=36) var leftpx = 65+15*(j+5);
+                        else var leftpx = 65+15*(j+6);
+                        var txt = '<li id="s2_'+i+'_'+j+'" title="'+i+'排'+j+'号" class="af" style="top:'+toppx+'px;left:'+leftpx+'px;">'+j+'</li>'
+                        $("#seatMapData_ul").append(txt);
+                    }
+                }
+                else if(i==18){
+                    for(var j=1; j<=56; j++){
+                        var toppx = 15*(i);
+                        if(j<=17) var leftpx = 65+15*(j+1);
+                        else if(j<=39) var leftpx = 65+15*(j+2);
+                        else var leftpx = 65+15*(j+3);
+                        var txt = '<li id="s2_'+i+'_'+j+'" title="'+i+'排'+j+'号" class="af" style="top:'+toppx+'px;left:'+leftpx+'px;">'+j+'</li>'
+                        $("#seatMapData_ul").append(txt);
+                    }
+                }
+                else if(i==19){
+                    for(var j=1; j<=60; j++){
+                        var toppx = 15*(i);
+                        if(j<=19) var leftpx = 65+15*(j-1);
+                        else if(j<=41) var leftpx = 65+15*(j);
+                        else var leftpx = 65+15*(j+1);
+                        var txt = '<li id="s2_'+i+'_'+j+'" title="'+i+'排'+j+'号" class="af" style="top:'+toppx+'px;left:'+leftpx+'px;">'+j+'</li>'
+                        $("#seatMapData_ul").append(txt);
+                    }
+                }
+                else if(i==21){
+                    for(var j=1; j<=42; j++){
+                        var toppx = 15*(i);
+                        if(j<=10) var leftpx = 65+15*(j+8);
+                        else if(j<=32) var leftpx = 65+15*(j+9);
+                        else var leftpx = 65+15*(j+10);
+                        var txt = '<li id="s2_'+i+'_'+j+'" title="'+i+'排'+j+'号" class="af" style="top:'+toppx+'px;left:'+leftpx+'px;">'+j+'</li>'
+                        $("#seatMapData_ul").append(txt);
+                    }
+                }
+                else if(i==22){
+                    for(var j=1; j<=26; j++){
+                        var toppx = 15*(i);
+                        if(j<=4) var leftpx = 65+15*(j+14);
+                        else if(j<=22) var leftpx = 65+15*(j+17);
+                        else var leftpx = 65+15*(j+20);
+                        var txt = '<li id="s2_'+i+'_'+j+'" title="'+i+'排'+j+'号" class="af" style="top:'+toppx+'px;left:'+leftpx+'px;">'+j+'</li>'
+                        $("#seatMapData_ul").append(txt);
+                    }
+                }
+                else{
+                    for(var j=1; j<=6; j++){
+                        var toppx = 15*(i-1);
+                        if(j<=3) var leftpx = 65+15*(j+1);
+                        else var leftpx = 65+15*(j+53);
+                        var txt = '<li id="s2_'+i+'_'+j+'" title="'+i+'排'+j+'号" class="af" style="top:'+toppx+'px;left:'+leftpx+'px;">'+j+'</li>'
+                        $("#seatMapData_ul").append(txt);
+                    }
+                }
+            }
+        }
+        else if(x.selectedIndex == "2"){
+            $("#seat-distribution-input").val("");
+            $("#input-total_tickets").val(0);
+            $("li").remove();
+            $(".anum").remove();
+            for(var i=1; i<=23; i++){
+                var toppx = 15*(i-1);
+                var txt1 = '<p class="anum" style="top:'+toppx+'px;left:20px;">'+i+'</p>'
+                var txt2 = '<p class="anum" style="top:'+toppx+'px;left:1145px;">'+i+'</p>'
+                $("#seatMapData").append(txt1,txt2);
+                if(i==1){
+                    var txt1 = '<li id="s3_1_1" title="1排1号" class="af" style="top:0px;left:95px;">1</li>'
+                    var txt2 = '<li id="s3_1_2" title="1排2号" class="af" style="top:0px;left:1070px;">2</li>'
+                    $("#seatMapData_ul").append(txt1,txt2);
+                }
+                else if(i==2){
+                    var txt1 = '<li id="s3_2_2" title="2排2号" class="af" style="top:15px;left:95px;">2</li>'
+                    var txt2 = '<li id="s3_2_3" title="2排3号" class="af" style="top:15px;left:1070px;">3</li>'
+                    var txt3 = '<li id="s3_2_1" title="2排1号" class="af" style="top:15px;left:80px;">1</li>'
+                    var txt4 = '<li id="s3_2_4" title="2排4号" class="af" style="top:15px;left:1085px;">4</li>'
+                    $("#seatMapData_ul").append(txt1,txt2,txt3,txt4);
+                }
+                else if(i==16){
+                    for(var j=1; j<=58; j++){
+                        var toppx = 15*(i-1);
+                        if(j<=3) var leftpx = 65+15*(j-1);
+                        else if(j<=19) var leftpx = 65+15*(j+4);
+                        else if(j<=39) var leftpx = 65+15*(j+5);
+                        else if(j<=55) var leftpx = 65+15*(j+6);
+                        else var leftpx = 65+15*(j+11);
+                        var txt = '<li id="s3_'+i+'_'+j+'" title="'+i+'排'+j+'号" class="af" style="top:'+toppx+'px;left:'+leftpx+'px;">'+j+'</li>'
+                        $("#seatMapData_ul").append(txt);
+                    }
+                }
+                else if(i==17){
+                    for(var j=1; j<=56; j++){
+                        var toppx = 15*(i-1);
+                        if(j<=18) var leftpx = 65+15*(j+5);
+                        else if(j<=38) var leftpx = 65+15*(j+6);
+                        else var leftpx = 65+15*(j+7);
+                        var txt = '<li id="s3_'+i+'_'+j+'" title="'+i+'排'+j+'号" class="af" style="top:'+toppx+'px;left:'+leftpx+'px;">'+j+'</li>'
+                        $("#seatMapData_ul").append(txt);
+                    }
+                }
+                else if(i==18){
+                    for(var j=1; j<=58; j++){
+                        var toppx = 15*(i-1);
+                        if(j<=19) var leftpx = 65+15*(j+4);
+                        else if(j<=39) var leftpx = 65+15*(j+5);
+                        else var leftpx = 65+15*(j+6);
+                        var txt = '<li id="s3_'+i+'_'+j+'" title="'+i+'排'+j+'号" class="af" style="top:'+toppx+'px;left:'+leftpx+'px;">'+j+'</li>'
+                        $("#seatMapData_ul").append(txt);
+                    }
+                }
+                else if(i==19){
+                    for(var j=1; j<=54; j++){
+                        var toppx = 15*(i-1);
+                        if(j<=17) var leftpx = 65+15*(j+6);
+                        else if(j<=37) var leftpx = 65+15*(j+7);
+                        else var leftpx = 65+15*(j+8);
+                        var txt = '<li id="s3_'+i+'_'+j+'" title="'+i+'排'+j+'号" class="af" style="top:'+toppx+'px;left:'+leftpx+'px;">'+j+'</li>'
+                        $("#seatMapData_ul").append(txt);
+                    }
+                }
+                else if(i==20){
+                    for(var j=1; j<=44; j++){
+                        var toppx = 15*(i-1);
+                        if(j<=12) var leftpx = 65+15*(j+11);
+                        else if(j<=32) var leftpx = 65+15*(j+12);
+                        else var leftpx = 65+15*(j+13);
+                        var txt = '<li id="s3_'+i+'_'+j+'" title="'+i+'排'+j+'号" class="af" style="top:'+toppx+'px;left:'+leftpx+'px;">'+j+'</li>'
+                        $("#seatMapData_ul").append(txt);
+                    }
+                }
+                else if(i==21){
+                    for(var j=1; j<=36; j++){
+                        var toppx = 15*(i-1);
+                        if(j<=8) var leftpx = 65+15*(j+15);
+                        else if(j<=28) var leftpx = 65+15*(j+16);
+                        else var leftpx = 65+15*(j+17);
+                        var txt = '<li id="s3_'+i+'_'+j+'" title="'+i+'排'+j+'号" class="af" style="top:'+toppx+'px;left:'+leftpx+'px;">'+j+'</li>'
+                        $("#seatMapData_ul").append(txt);
+                    }
+                }
+                else if(i==22){
+                    for(var j=1; j<=28; j++){
+                        var toppx = 15*(i-1);
+                        if(j<=4) var leftpx = 65+15*(j+19);
+                        else if(j<=24) var leftpx = 65+15*(j+20);
+                        else var leftpx = 65+15*(j+21);
+                        var txt = '<li id="s3_'+i+'_'+j+'" title="'+i+'排'+j+'号" class="af" style="top:'+toppx+'px;left:'+leftpx+'px;">'+j+'</li>'
+                        $("#seatMapData_ul").append(txt);
+                    }
+                }
+                else if(i==23){
+                    for(var j=1; j<=12; j++){
+                        var toppx = 15*(i-1);
+                        var leftpx = 65+15*(j+28);
+                        var txt = '<li id="s3_'+i+'_'+j+'" title="'+i+'排'+j+'号" class="af" style="top:'+toppx+'px;left:'+leftpx+'px;">'+j+'</li>'
+                        $("#seatMapData_ul").append(txt);
+                    }
+                }
+                else{
+                    for(var j=1; j<=6; j++){
+                        var toppx = 15*(i-1);
+                        if(j<=3) var leftpx = 65+15*(j-1);
+                        else var leftpx = 65+15*(j+63);
+                        var txt = '<li id="s3_'+i+'_'+j+'" title="'+i+'排'+j+'号" class="af" style="top:'+toppx+'px;left:'+leftpx+'px;">'+j+'</li>'
+                        $("#seatMapData_ul").append(txt);
+                    }
+                }
+            }
+        }
+        else{
+            $("#seat-distribution-input").val("");
+            $("#input-total_tickets").val(0);
+            $("li").remove();
+            $(".anum").remove();
+            for(var i=1; i<=22; i++){
+                var toppx = 15*(i-1);
+                var txt1 = '<p class="anum" style="top:'+toppx+'px;left:20px;">'+i+'</p>'
+                var txt2 = '<p class="anum" style="top:'+toppx+'px;left:1115px;">'+i+'</p>'
+                $("#seatMapData").append(txt1,txt2);
+                if(i>=1 && i<=3){
+                    var toppx = 15*(i-1);
+                    var leftpx1 = 65+15*2;
+                    var leftpx2 = 65+15*65;
+                    var txt1 = '<li id="s4_'+i+'_1" title="'+i+'排1号" class="af" style="top:'+toppx+'px;left:'+leftpx1+'px;">1</li>'
+                    var txt2 = '<li id="s4_'+i+'_2" title="'+i+'排2号" class="af" style="top:'+toppx+'px;left:'+leftpx2+'px;">2</li>'
+                    $("#seatMapData_ul").append(txt1,txt2);
+                }
+                else if(i>=4 && i<=6){
+                    var toppx = 15*(i-1);
+                    var leftpx1 = 65+15*2;
+                    var leftpx2 = 65+15*65;
+                    var leftpx3 = 65;
+                    var leftpx4 = 65+15*67;
+                    var txt1 = '<li id="s4_'+i+'_2" title="'+i+'排2号" class="af" style="top:'+toppx+'px;left:'+leftpx1+'px;">2</li>'
+                    var txt2 = '<li id="s4_'+i+'_3" title="'+i+'排3号" class="af" style="top:'+toppx+'px;left:'+leftpx2+'px;">3</li>'
+                    var txt3 = '<li id="s4_'+i+'_1" title="'+i+'排1号" class="af" style="top:'+toppx+'px;left:'+leftpx3+'px;">1</li>'
+                    var txt4 = '<li id="s4_'+i+'_4" title="'+i+'排4号" class="af" style="top:'+toppx+'px;left:'+leftpx4+'px;">4</li>'
+                    $("#seatMapData_ul").append(txt1,txt2,txt3,txt4);
+                }
+                else if(i==16){
+                    for(var j=1; j<=52; j++){
+                        var toppx = 15*(i-1);
+                        if(j<=3) var leftpx = 65+15*(j-1);
+                        else if(j<=16) var leftpx = 65+15*(j+6);
+                        else if(j<=36) var leftpx = 65+15*(j+7);
+                        else if(j<=49) var leftpx = 65+15*(j+8);
+                        else var leftpx = 65+15*(j+15);
+                        var txt = '<li id="s4_'+i+'_'+j+'" title="'+i+'排'+j+'号" class="af" style="top:'+toppx+'px;left:'+leftpx+'px;">'+j+'</li>'
+                        $("#seatMapData_ul").append(txt);
+                    }
+                }
+                else if(i==17){
+                    for(var j=1; j<=50; j++){
+                        var toppx = 15*(i-1);
+                        if(j<=15) var leftpx = 65+15*(j+7);
+                        else if(j<=35) var leftpx = 65+15*(j+8);
+                        else var leftpx = 65+15*(j+9);
+                        var txt = '<li id="s4_'+i+'_'+j+'" title="'+i+'排'+j+'号" class="af" style="top:'+toppx+'px;left:'+leftpx+'px;">'+j+'</li>'
+                        $("#seatMapData_ul").append(txt);
+                    }
+                }
+                else if(i==18||i==19){
+                    for(var j=1; j<=54; j++){
+                        var toppx = 15*(i-1);
+                        if(j<=17) var leftpx = 65+15*(j+5);
+                        else if(j<=37) var leftpx = 65+15*(j+6);
+                        else var leftpx = 65+15*(j+7);
+                        var txt = '<li id="s4_'+i+'_'+j+'" title="'+i+'排'+j+'号" class="af" style="top:'+toppx+'px;left:'+leftpx+'px;">'+j+'</li>'
+                        $("#seatMapData_ul").append(txt);
+                    }
+                }
+                else if(i==20){
+                    for(var j=1; j<=42; j++){
+                        var toppx = 15*(i-1);
+                        if(j<=11) var leftpx = 65+15*(j+11);
+                        else if(j<=31) var leftpx = 65+15*(j+12);
+                        else var leftpx = 65+15*(j+13);
+                        var txt = '<li id="s4_'+i+'_'+j+'" title="'+i+'排'+j+'号" class="af" style="top:'+toppx+'px;left:'+leftpx+'px;">'+j+'</li>'
+                        $("#seatMapData_ul").append(txt);
+                    }
+                }
+                else if(i==21){
+                    for(var j=1; j<=36; j++){
+                        var toppx = 15*(i-1);
+                        if(j<=8) var leftpx = 65+15*(j+14);
+                        else if(j<=28) var leftpx = 65+15*(j+15);
+                        else var leftpx = 65+15*(j+16);
+                        var txt = '<li id="s4_'+i+'_'+j+'" title="'+i+'排'+j+'号" class="af" style="top:'+toppx+'px;left:'+leftpx+'px;">'+j+'</li>'
+                        $("#seatMapData_ul").append(txt);
+                    }
+                }
+                else if(i==22){
+                    for(var j=1; j<=28; j++){
+                        var toppx = 15*(i-1);
+                        if(j<=4) var leftpx = 65+15*(j+18);
+                        else if(j<=24) var leftpx = 65+15*(j+19);
+                        else var leftpx = 65+15*(j+20);
+                        var txt = '<li id="s4_'+i+'_'+j+'" title="'+i+'排'+j+'号" class="af" style="top:'+toppx+'px;left:'+leftpx+'px;">'+j+'</li>'
+                        $("#seatMapData_ul").append(txt);
+                    }
+                }
+                else{
+                    for(var j=1; j<=6; j++){
+                        var toppx = 15*(i-1);
+                        if(j<=3) var leftpx = 65+15*(j-1);
+                        else var leftpx = 65+15*(j+61);
+                        var txt = '<li id="s4_'+i+'_'+j+'" title="'+i+'排'+j+'号" class="af" style="top:'+toppx+'px;left:'+leftpx+'px;">'+j+'</li>'
+                        $("#seatMapData_ul").append(txt);
+                    }
+                }
+            }
+        }
+        $("li").click(function(){
+            var id = $(this).attr("id");
+            if($(this).attr("class")=="af"){
+                document.getElementById(id).className="as";
+                $("#seat-distribution-input").val($("#seat-distribution-input").val()+id);
+            }
+            else{
+                document.getElementById(id).className="af";
+                $("#seat-distribution-input").val($("#seat-distribution-input").val().replace(id,""));
+            }
+            var as = $(".as");                        
+            $("#input-total_tickets").val(as.length);
+        });
+        $(".anum").click(function(){
+            var row = this.innerHTML;
+            var seats = document.getElementById("seatMapData").children[0].children;
+            for(var i = 0; i < seats.length; i++){
+                if(seats[i].id.match("_"+row+"_") != null){
+                    seats[i].click();
+                }
+            }
+        });
+    }
     </script>
     <script src="{% static "js/activity_detail.js" %}"></script>
 {% endblock %}
@@ -240,7 +638,7 @@
             <div class="form-group">
                 <label for="input-total_tickets" class="col-sm-2 control-label">总票数</label>
                 <div class="col-sm-10">
-                    <input type="number" name="total_tickets" class="form-control" id="input-total_tickets" min="1" max="400" placeholder="此次活动通过“紫荆之声”的发票总数，如 1000" onchange="setInputNum()">
+                    <input type="number" name="total_tickets" class="form-control" id="input-total_tickets" min="1"  placeholder="此次活动通过“紫荆之声”的发票总数，如 1000" onchange="setInputNum()">
                 </div>
             </div>
 			<script>
@@ -251,14 +649,11 @@
 					var as = $(".as");                        
                     $("#input-total_tickets").val(as.length);
                 }
+                else if(x.selectedIndex == "2"){
+                    $("#input-total_tickets").val(parseInt($("#a").val())+parseInt($("#b").val())+parseInt($("#c").val())+parseInt($("#d").val())+parseInt($("#e").val()));
+                }
                 else{
-					$("#seat-distribution-input").val("");
-                    var seats = document.getElementById("seatMapData").children[0].children;
-                    var length = $("#input-total_tickets").val();
-                    for(var i = 0; i < parseInt(length); i++){
-                        $("#seat-distribution-input").val($("#seat-distribution-input").val()+seats[i].id);
-                    }
-					$("#input-total_tickets").val(parseInt(length));
+
                 }
             }
             </script>
@@ -373,7 +768,8 @@
                 <div class="col-sm-10">
                     <select name="seat_status" id="input-seat_status" class="form-control" onclick="getSeatDistribution()" required >
                         <option value="0">不分配座位</option>
-                        <option value="1">分配座位</option>
+                        <option value="1">分配座位(新清华学堂)</option>
+                        <option value="2">分配区域(综体)</option>
                     </select>
                 </div>
             </div>
@@ -383,495 +779,157 @@
                 var x=document.getElementById("input-seat_status")
                 if(x.selectedIndex == "1"){
                     document.getElementById("seat-distribution").setAttribute('style', 'display:block');
+                    document.getElementById("seat-distribution2").setAttribute('style', 'display:none');
 					$("#input-total_tickets").val(0);
 					$("#seat-distribution-input").val("");
+                    $("#a").val("");
+                    $("#b").val("");
+                    $("#c").val("");
+                    $("#d").val("");
+                    $("#e").val("");
+                    while(document.getElementsByClassName("as").length){
+                        document.getElementsByClassName("as")[0].className="af";
+                    }
+                }
+                else if(x.selectedIndex == "2"){
+                    document.getElementById("seat-distribution2").setAttribute('style', 'display:block');
+                    document.getElementById("seat-distribution").setAttribute('style', 'display:none');
+                    $("#input-total_tickets").val(0);
+                    $("#seat-distribution-input").val("");
+                    $("#a").val("");
+                    $("#b").val("");
+                    $("#c").val("");
+                    $("#d").val("");
+                    $("#e").val("");
+                    while(document.getElementsByClassName("as").length){
+                        document.getElementsByClassName("as")[0].className="af";
+                    }
                 }
                 else{
                     document.getElementById("seat-distribution").setAttribute('style', 'display:none'); 
+                    document.getElementById("seat-distribution2").setAttribute('style', 'display:none');
 					$("#seat-distribution-input").val("");
-                    var seats = document.getElementById("seatMapData").children[0].children;
-                    var length = $("#input-total_tickets").val();
-                    for(var i = 0; i < parseInt(length); i++){
-                        $("#seat-distribution-input").val($("#seat-distribution-input").val()+seats[i].id);
+                    $("#a").val("");
+                    $("#b").val("");
+                    $("#c").val("");
+                    $("#d").val("");
+                    $("#e").val("");
+                    while(document.getElementsByClassName("as").length){
+                        document.getElementsByClassName("as")[0].className="af";
                     }
-					$("#input-total_tickets").val(parseInt(length));
                 }
             }
             </script>
 			
-			<div class="form-group" id="seat-distribution" style="display: none;">
-                <input type="text" name="seat-distribution-input" class="form-control" id="seat-distribution-input" style="display:none;">
-                <label class="col-sm-2 control-label">座位具体分配</label>
-                <div class="col-sm-10" style="margin-top:50px;">
-                    <div class="l_c2_5">
-                        <dl>
-                            <dt>已选座位：</dt>
-                            <dd>
-                                <img src="https://member.hipiao.com/res/images/buy/icon4.gif" alt=""></dd>
-                            <dt>未选座位：</dt>
-                            <dd>
-                                <img src="https://member.hipiao.com/res/images/buy/icon5.gif" alt=""></dd>
-                            
-                        </dl>
+            <div class="form-group" id="seat-distribution2" style="display: none;">
+                <div class="row">
+                    <label class="col-sm-2 control-label">座位具体分配</label>
+                    <div class="col-sm-6">
+                        <img alt="140x140" src="{% static "img/zongti.png" %}" class="img-rounded" width="100%" height="100%"/>
                     </div>
-                    <div class="l_c2_4">
-                        <div id="seatMap" class="selseatbgleftzi">
-                            <div id="seatMapData">
-                                <ul style="list-style-type:none">
-                                    <li id="s1_13_9" title="13排9号" class="af"  style="top:286px;left:266px;">9</li>
-                                    <li id="s1_13_11" title="13排11号" class="af"  style="top:286px;left:244px;">11</li>
-                                    <li id="s1_13_13" title="13排13号" class="af"  style="top:286px;left:222px;">13</li>
-                                    <li id="s1_13_15" title="13排15号" class="af"  style="top:286px;left:200px;">15</li>
-                                    <li id="s1_13_7" title="13排7号" class="af"  style="top:286px;left:288px;">7</li>
-                                    <li id="s1_13_5" title="13排5号" class="af"  style="top:286px;left:310px;">5</li>
-                                    <li id="s1_13_3" title="13排3号" class="af"  style="top:286px;left:332px;">3</li>
-                                    <li id="s1_13_1" title="13排1号" class="af"  style="top:286px;left:354px;">1</li>
-                                    <li id="s1_13_2" title="13排2号" class="af"  style="top:286px;left:376px;">2</li>
-                                    <li id="s1_13_4" title="13排4号" class="af"  style="top:286px;left:398px;">4</li>
-                                    <li id="s1_13_6" title="13排6号" class="af"  style="top:286px;left:420px;">6</li>
-                                    <li id="s1_13_17" title="13排17号" class="af"  style="top:286px;left:156px;">17</li>
-                                    <li id="s1_13_19" title="13排19号" class="af"  style="top:286px;left:134px;">19</li>
-                                    <li id="s1_12_6" title="12排6号" class="af"  style="top:264px;left:420px;">6</li>
-                                    <li id="s1_12_8" title="12排8号" class="af"  style="top:264px;left:442px;">8</li>
-                                    <li id="s1_12_10" title="12排10号" class="af"  style="top:264px;left:464px;">10</li>
-                                    <li id="s1_12_12" title="12排12号" class="af"  style="top:264px;left:486px;">12</li>
-                                    <li id="s1_12_14" title="12排14号" class="af"  style="top:264px;left:508px;">14</li>
-                                    <li id="s1_12_16" title="12排16号" class="af"  style="top:264px;left:552px;">16</li>
-                                    <li id="s1_12_18" title="12排18号" class="af"  style="top:264px;left:574px;">18</li>
-                                    <li id="s1_12_20" title="12排20号" class="af"  style="top:264px;left:596px;">20</li>
-                                    <li id="s1_12_22" title="12排22号" class="af"  style="top:264px;left:618px;">22</li>
-                                    <li id="s1_13_23" title="13排23号" class="af"  style="top:286px;left:90px;">23</li>
-                                    <li id="s1_13_21" title="13排21号" class="af"  style="top:286px;left:112px;">21</li>
-                                    <li id="s1_13_8" title="13排8号" class="af"  style="top:286px;left:442px;">8</li>
-                                    <li id="s1_13_10" title="13排10号" class="af"  style="top:286px;left:464px;">10</li>
-                                    <li id="s1_13_12" title="13排12号" class="af"  style="top:286px;left:486px;">12</li>
-                                    <li id="s1_14_11" title="14排11号" class="af"  style="top:308px;left:244px;">11</li>
-                                    <li id="s1_14_9" title="14排9号" class="af"  style="top:308px;left:266px;">9</li>
-                                    <li id="s1_14_7" title="14排7号" class="af"  style="top:308px;left:288px;">7</li>
-                                    <li id="s1_14_5" title="14排5号" class="af"  style="top:308px;left:310px;">5</li>
-                                    <li id="s1_14_3" title="14排3号" class="af"  style="top:308px;left:332px;">3</li>
-                                    <li id="s1_14_1" title="14排1号" class="af"  style="top:308px;left:354px;">1</li>
-                                    <li id="s1_14_2" title="14排2号" class="af"  style="top:308px;left:376px;">2</li>
-                                    <li id="s1_14_4" title="14排4号" class="af"  style="top:308px;left:398px;">4</li>
-                                    <li id="s1_14_6" title="14排6号" class="af"  style="top:308px;left:420px;">6</li>
-                                    <li id="s1_14_8" title="14排8号" class="af"  style="top:308px;left:442px;">8</li>
-                                    <li id="s1_14_13" title="14排13号" class="af"  style="top:308px;left:222px;">13</li>
-                                    <li id="s1_14_15" title="14排15号" class="af"  style="top:308px;left:200px;">15</li>
-                                    <li id="s1_14_17" title="14排17号" class="af"  style="top:308px;left:156px;">17</li>
-                                    <li id="s1_13_14" title="13排14号" class="af"  style="top:286px;left:508px;">14</li>
-                                    <li id="s1_13_16" title="13排16号" class="af"  style="top:286px;left:552px;">16</li>
-                                    <li id="s1_13_18" title="13排18号" class="af"  style="top:286px;left:574px;">18</li>
-                                    <li id="s1_13_20" title="13排20号" class="af"  style="top:286px;left:596px;">20</li>
-                                    <li id="s1_13_22" title="13排22号" class="af"  style="top:286px;left:618px;">22</li>
-                                    <li id="s1_14_27" title="14排27号" class="af"  style="top:308px;left:46px;">27</li>
-                                    <li id="s1_14_25" title="14排25号" class="af"  style="top:308px;left:68px;">25</li>
-                                    <li id="s1_14_23" title="14排23号" class="af"  style="top:308px;left:90px;">23</li>
-                                    <li id="s1_14_21" title="14排21号" class="af"  style="top:308px;left:112px;">21</li>
-                                    <li id="s1_14_19" title="14排19号" class="af"  style="top:308px;left:134px;">19</li>
-                                    <li id="s1_14_10" title="14排10号" class="af"  style="top:308px;left:464px;">10</li>
-                                    <li id="s1_10_5"  title="10排5号" class="af"  style="top:220px;left:310px;">5</li>
-                                    <li id="s1_11_23" title="11排23号" class="af"  style="top:242px;left:90px;">23</li>
-                                    <li id="s1_11_21" title="11排21号" class="af"  style="top:242px;left:112px;">21</li>
-                                    <li id="s1_11_19" title="11排19号" class="af"  style="top:242px;left:134px;">19</li>
-                                    <li id="s1_11_17" title="11排17号" class="af"  style="top:242px;left:156px;">17</li>
-                                    <li id="s1_11_15" title="11排15号" class="af"  style="top:242px;left:200px;">15</li>
-                                    <li id="s1_11_13" title="11排13号" class="af"  style="top:242px;left:222px;">13</li>
-                                    <li id="s1_11_11" title="11排11号" class="af"  style="top:242px;left:244px;">11</li>
-                                    <li id="s1_11_9" title="11排9号" class="af"  style="top:242px;left:266px;">9</li>
-                                    <li id="s1_11_7" title="11排7号" class="af"  style="top:242px;left:288px;">7</li>
-                                    <li id="s1_11_5" title="11排5号" class="af"  style="top:242px;left:310px;">5</li>
-                                    <li id="s1_10_22" title="10排22号" class="af"  style="top:220px;left:618px;">22</li>
-                                    <li id="s1_10_20" title="10排20号" class="af"  style="top:220px;left:596px;">20</li>
-                                    <li id="s1_10_18" title="10排18号" class="af"  style="top:220px;left:574px;">18</li>
-                                    <li id="s1_10_3"  title="10排3号" class="af"  style="top:220px;left:332px;">3</li>
-                                    <li id="s1_10_1"  title="10排1号" class="af"  style="top:220px;left:354px;">1</li>
-                                    <li id="s1_10_2" title="10排2号" class="af"  style="top:220px;left:376px;">2</li>
-                                    <li id="s1_10_4" title="10排4号" class="af"  style="top:220px;left:398px;">4</li>
-                                    <li id="s1_10_6" title="10排6号" class="af"  style="top:220px;left:420px;">6</li>
-                                    <li id="s1_10_8"  title="10排8号" class="af"  style="top:220px;left:442px;">8</li>
-                                    <li id="s1_10_10" title="10排10号" class="af"  style="top:220px;left:464px;">10</li>
-                                    <li id="s1_10_12" title="10排12号" class="af"  style="top:220px;left:486px;">12</li>
-                                    <li id="s1_10_14" title="10排14号" class="af"  style="top:220px;left:508px;">14</li>
-                                    <li id="s1_10_16" title="10排16号" class="af"  style="top:220px;left:552px;">16</li>
-                                    <li id="s1_11_3" title="11排3号" class="af"  style="top:242px;left:332px;">3</li>
-                                    <li id="s1_11_1" title="11排1号" class="af"  style="top:242px;left:354px;">1</li>
-                                    <li id="s1_11_2" title="11排2号" class="af"  style="top:242px;left:376px;">2</li>
-                                    <li id="s1_12_17" title="12排17号" class="af"  style="top:264px;left:156px;">17</li>
-                                    <li id="s1_12_15" title="12排15号" class="af"  style="top:264px;left:200px;">15</li>
-                                    <li id="s1_12_13" title="12排13号" class="af"  style="top:264px;left:222px;">13</li>
-                                    <li id="s1_12_11" title="12排11号" class="af"  style="top:264px;left:244px;">11</li>
-                                    <li id="s1_12_9" title="12排9号" class="af"  style="top:264px;left:266px;">9</li>
-                                    <li id="s1_12_7" title="12排7号" class="af"  style="top:264px;left:288px;">7</li>
-                                    <li id="s1_12_5" title="12排5号" class="af"  style="top:264px;left:310px;">5</li>
-                                    <li id="s1_12_3"  title="12排3号" class="af"  style="top:264px;left:332px;">3</li>
-                                    <li id="s1_12_1" title="12排1号" class="af"  style="top:264px;left:354px;">1</li>
-                                    <li id="s1_12_2" title="12排2号" class="af"  style="top:264px;left:376px;">2</li>
-                                    <li id="s1_12_19" title="12排19号" class="af"  style="top:264px;left:134px;">19</li>
-                                    <li id="s1_12_21" title="12排21号" class="af"  style="top:264px;left:112px;">21</li>
-                                    <li id="s1_12_23" title="12排23号" class="af"  style="top:264px;left:90px;">23</li>
-                                    <li id="s1_11_4" title="11排4号" class="af"  style="top:242px;left:398px;">4</li>
-                                    <li id="s1_11_6" title="11排6号" class="af"  style="top:242px;left:420px;">6</li>
-                                    <li id="s1_11_8" title="11排8号" class="af"  style="top:242px;left:442px;">8</li>
-                                    <li id="s1_11_10" title="11排10号" class="af"  style="top:242px;left:464px;">10</li>
-                                    <li id="s1_11_12" title="11排12号" class="af"  style="top:242px;left:486px;">12</li>
-                                    <li id="s1_11_14" title="11排14号" class="af"  style="top:242px;left:508px;">14</li>
-                                    <li id="s1_11_16" title="11排16号" class="af"  style="top:242px;left:552px;">16</li>
-                                    <li id="s1_11_18" title="11排18号" class="af"  style="top:242px;left:574px;">18</li>
-                                    <li id="s1_11_20" title="11排20号" class="af"  style="top:242px;left:596px;">20</li>
-                                    <li id="s1_11_22" title="11排22号" class="af"  style="top:242px;left:618px;">22</li>
-                                    <li id="s1_12_4"  title="12排4号" class="af"  style="top:264px;left:398px;">4</li>
-                                    <li id="s1_14_12" title="14排12号" class="af"  style="top:308px;left:486px;">12</li>
-                                    <li id="s1_16_8" title="16排8号" class="af"  style="top:352px;left:442px;">8</li>
-                                    <li id="s1_17_19" title="17排19号" class="af"  style="top:374px;left:134px;">19</li>
-                                    <li id="s1_17_17" title="17排17号" class="af"  style="top:374px;left:156px;">17</li>
-                                    <li id="s1_17_15" title="17排15号" class="af"  style="top:374px;left:200px;">15</li>
-                                    <li id="s1_17_13" title="17排13号" class="af"  style="top:374px;left:222px;">13</li>
-                                    <li id="s1_17_11" title="17排11号" class="af"  style="top:374px;left:244px;">11</li>
-                                    <li id="s1_17_9" title="17排9号" class="af"  style="top:374px;left:266px;">9</li>
-                                    <li id="s1_17_7" title="17排7号" class="af"  style="top:374px;left:288px;">7</li>
-                                    <li id="s1_17_5" title="17排5号" class="af"  style="top:374px;left:310px;">5</li>
-                                    <li id="s1_17_3" title="17排3号" class="af"  style="top:374px;left:332px;">3</li>
-                                    <li id="s1_17_1"  title="17排1号" class="af"  style="top:374px;left:354px;">1</li>
-                                    <li id="s1_17_21" title="17排21号" class="af"  style="top:374px;left:112px;">21</li>
-                                    <li id="s1_17_23" title="17排23号" class="af"  style="top:374px;left:90px;">23</li>
-                                    <li id="s1_17_25" title="17排25号" class="af"  style="top:374px;left:68px;">25</li>
-                                    <li id="s1_16_10" title="16排10号" class="af"  style="top:352px;left:464px;">10</li>
-                                    <li id="s1_16_12" title="16排12号" class="af"  style="top:352px;left:486px;">12</li>
-                                    <li id="s1_16_14" title="16排14号" class="af"  style="top:352px;left:508px;">14</li>
-                                    <li id="s1_16_16" title="16排16号" class="af"  style="top:352px;left:552px;">16</li>
-                                    <li id="s1_16_18" title="16排18号" class="af"  style="top:352px;left:574px;">18</li>
-                                    <li id="s1_16_20" title="16排20号" class="af"  style="top:352px;left:596px;">20</li>
-                                    <li id="s1_16_22" title="16排22号" class="af"  style="top:352px;left:618px;">22</li>
-                                    <li id="s1_16_24" title="16排24号" class="af"  style="top:352px;left:640px;">24</li>
-                                    <li id="s1_16_26" title="16排26号" class="af"  style="top:352px;left:662px;">26</li>
-                                    <li id="s1_17_27" title="17排27号" class="af"  style="top:374px;left:46px;">27</li>
-                                    <li id="s1_17_2" title="17排2号" class="af"  style="top:374px;left:376px;">2</li>
-                                    <li id="s1_17_4" title="17排4号" class="af"  style="top:374px;left:398px;">4</li>
-                                    <li id="s1_17_6" title="17排6号" class="af"  style="top:374px;left:420px;">6</li>
-                                    <li id="s1_18_9" title="18排9号" class="af"  style="top:396px;left:266px;">9</li>
-                                    <li id="s1_18_7" title="18排7号" class="af"  style="top:396px;left:288px;">7</li>
-                                    <li id="s1_18_5" title="18排5号" class="af"  style="top:396px;left:310px;">5</li>
-                                    <li id="s1_18_3" title="18排3号" class="af"  style="top:396px;left:332px;">3</li>
-                                    <li id="s1_18_1" title="18排1号" class="af"  style="top:396px;left:354px;">1</li>
-                                    <li id="s1_18_2" title="18排2号" class="af"  style="top:396px;left:376px;">2</li>
-                                    <li id="s1_18_4" title="18排4号" class="af"  style="top:396px;left:398px;">4</li>
-                                    <li id="s1_18_6" title="18排6号" class="af"  style="top:396px;left:420px;">6</li>
-                                    <li id="s1_18_8" title="18排8号" class="af"  style="top:396px;left:442px;">8</li>
-                                    <li id="s1_18_10" title="18排10号" class="af"  style="top:396px;left:464px;">10</li>
-                                    <li id="s1_18_11" title="18排11号" class="af"  style="top:396px;left:244px;">11</li>
-                                    <li id="s1_18_13" title="18排13号" class="af"  style="top:396px;left:222px;">13</li>
-                                    <li id="s1_18_15" title="18排15号" class="af"  style="top:396px;left:200px;">15</li>
-                                    <li id="s1_17_8" title="17排8号" class="af"  style="top:374px;left:442px;">8</li>
-                                    <li id="s1_17_10" title="17排10号" class="af"  style="top:374px;left:464px;">10</li>
-                                    <li id="s1_17_12" title="17排12号" class="af"  style="top:374px;left:486px;">12</li>
-                                    <li id="s1_17_14" title="17排14号" class="af"  style="top:374px;left:508px;">14</li>
-                                    <li id="s1_17_16" title="17排16号" class="af"  style="top:374px;left:552px;">16</li>
-                                    <li id="s1_17_18" title="17排18号" class="af"  style="top:374px;left:574px;">18</li>
-                                    <li id="s1_17_20" title="17排20号" class="af"  style="top:374px;left:596px;">20</li>
-                                    <li id="s1_17_22" title="17排22号" class="af"  style="top:374px;left:618px;">22</li>
-                                    <li id="s1_17_24" title="17排24号" class="af"  style="top:374px;left:640px;">24</li>
-                                    <li id="s1_17_26" title="17排26号" class="af"  style="top:374px;left:662px;">26</li>
-                                    <li id="s1_18_12" title="18排12号" class="af"  style="top:396px;left:486px;">12</li>
-                                    <li id="s1_14_14" title="14排14号" class="af"  style="top:308px;left:508px;">14</li>
-                                    <li id="s1_15_13" title="15排13号" class="af"  style="top:330px;left:222px;">13</li>
-                                    <li id="s1_15_11" title="15排11号" class="af"  style="top:330px;left:244px;">11</li>
-                                    <li id="s1_15_9" title="15排9号" class="af"  style="top:330px;left:266px;">9</li>
-                                    <li id="s1_15_7" title="15排7号" class="af"  style="top:330px;left:288px;">7</li>
-                                    <li id="s1_15_5" title="15排5号" class="af"  style="top:330px;left:310px;">5</li>
-                                    <li id="s1_15_3" title="15排3号" class="af"  style="top:330px;left:332px;">3</li>
-                                    <li id="s1_15_1" title="15排1号" class="af"  style="top:330px;left:354px;">1</li>
-                                    <li id="s1_15_2" title="15排2号" class="af"  style="top:330px;left:376px;">2</li>
-                                    <li id="s1_15_4" title="15排4号" class="af"  style="top:330px;left:398px;">4</li>
-                                    <li id="s1_15_6" title="15排6号" class="af"  style="top:330px;left:420px;">6</li>
-                                    <li id="s1_15_15" title="15排15号" class="af"  style="top:330px;left:200px;">15</li>
-                                    <li id="s1_15_17" title="15排17号" class="af"  style="top:330px;left:156px;">17</li>
-                                    <li id="s1_15_19" title="15排19号" class="af"  style="top:330px;left:134px;">19</li>
-                                    <li id="s1_14_16" title="14排16号" class="af"  style="top:308px;left:552px;">16</li>
-                                    <li id="s1_14_18" title="14排18号" class="af"  style="top:308px;left:574px;">18</li>
-                                    <li id="s1_14_20" title="14排20号" class="af"  style="top:308px;left:596px;">20</li>
-                                    <li id="s1_14_22" title="14排22号" class="af"  style="top:308px;left:618px;">22</li>
-                                    <li id="s1_14_24" title="14排24号" class="af"  style="top:308px;left:640px;">24</li>
-                                    <li id="s1_14_26" title="14排26号" class="af"  style="top:308px;left:662px;">26</li>
-                                    <li id="s1_15_27" title="15排27号" class="af"  style="top:330px;left:46px;">27</li>
-                                    <li id="s1_15_25" title="15排25号" class="af"  style="top:330px;left:68px;">25</li>
-                                    <li id="s1_15_23" title="15排23号" class="af"  style="top:330px;left:90px;">23</li>
-                                    <li id="s1_15_21" title="15排21号" class="af"  style="top:330px;left:112px;">21</li>
-                                    <li id="s1_15_8" title="15排8号" class="af"  style="top:330px;left:442px;">8</li>
-                                    <li id="s1_15_10" title="15排10号" class="af"  style="top:330px;left:464px;">10</li>
-                                    <li id="s1_15_12" title="15排12号" class="af"  style="top:330px;left:486px;">12</li>
-                                    <li id="s1_16_15" title="16排15号" class="af"  style="top:352px;left:200px;">15</li>
-                                    <li id="s1_16_13" title="16排13号" class="af"  style="top:352px;left:222px;">13</li>
-                                    <li id="s1_16_11" title="16排11号" class="af"  style="top:352px;left:244px;">11</li>
-                                    <li id="s1_16_9" title="16排9号" class="af"  style="top:352px;left:266px;">9</li>
-                                    <li id="s1_16_7" title="16排7号" class="af"  style="top:352px;left:288px;">7</li>
-                                    <li id="s1_16_5" title="16排5号" class="af"  style="top:352px;left:310px;">5</li>
-                                    <li id="s1_16_3" title="16排3号" class="af"  style="top:352px;left:332px;">3</li>
-                                    <li id="s1_16_1" title="16排1号" class="af"  style="top:352px;left:354px;">1</li>
-                                    <li id="s1_16_2" title="16排2号" class="af"  style="top:352px;left:376px;">2</li>
-                                    <li id="s1_16_4" title="16排4号" class="af"  style="top:352px;left:398px;">4</li>
-                                    <li id="s1_16_17" title="16排17号" class="af"  style="top:352px;left:156px;">17</li>
-                                    <li id="s1_16_19" title="16排19号" class="af"  style="top:352px;left:134px;">19</li>
-                                    <li id="s1_16_21" title="16排21号" class="af"  style="top:352px;left:112px;">21</li>
-                                    <li id="s1_15_14" title="15排14号" class="af"  style="top:330px;left:508px;">14</li>
-                                    <li id="s1_15_16" title="15排16号" class="af"  style="top:330px;left:552px;">16</li>
-                                    <li id="s1_15_18" title="15排18号" class="af"  style="top:330px;left:574px;">18</li>
-                                    <li id="s1_15_20" title="15排20号" class="af"  style="top:330px;left:596px;">20</li>
-                                    <li id="s1_15_22" title="15排22号" class="af"  style="top:330px;left:618px;">22</li>
-                                    <li id="s1_15_24" title="15排24号" class="af"  style="top:330px;left:640px;">24</li>
-                                    <li id="s1_15_26" title="15排26号" class="af"  style="top:330px;left:662px;">26</li>
-                                    <li id="s1_16_27" title="16排27号" class="af"  style="top:352px;left:46px;">27</li>
-                                    <li id="s1_16_25" title="16排25号" class="af"  style="top:352px;left:68px;">25</li>
-                                    <li id="s1_16_23" title="16排23号" class="af"  style="top:352px;left:90px;">23</li>
-                                    <li id="s1_16_6" title="16排6号" class="af"  style="top:352px;left:420px;">6</li>
-                                    <li id="s1_3_3" title="3排3号" class="af"  style="top:44px;left:332px;">3</li>
-                                    <li id="s1_4_17" title="4排17号" class="af"  style="top:66px;left:156px;">17</li>
-                                    <li id="s1_4_15" title="4排15号" class="af"  style="top:66px;left:200px;">15</li>
-                                    <li id="s1_4_13" title="4排13号" class="af"  style="top:66px;left:222px;">13</li>
-                                    <li id="s1_4_11" title="4排11号" class="af"  style="top:66px;left:244px;">11</li>
-                                    <li id="s1_4_9" title="4排9号" class="af"  style="top:66px;left:266px;">9</li>
-                                    <li id="s1_4_7" title="4排7号" class="af"  style="top:66px;left:288px;">7</li>
-                                    <li id="s1_4_5" title="4排5号" class="af"  style="top:66px;left:310px;">5</li>
-                                    <li id="s1_4_3" title="4排3号" class="af"  style="top:66px;left:332px;">3</li>
-                                    <li id="s1_4_1" title="4排1号" class="af"  style="top:66px;left:354px;">1</li>
-                                    <li id="s1_4_2" title="4排2号" class="af"  style="top:66px;left:376px;">2</li>
-                                    <li id="s1_4_19" title="4排19号" class="af"  style="top:66px;left:134px;">19</li>
-                                    <li id="s1_4_21" title="4排21号" class="af"  style="top:66px;left:112px;">21</li>
-                                    <li id="s1_3_20" title="3排20号" class="af"  style="top:44px;left:596px;">20</li>
-                                    <li id="s1_3_1" title="3排1号" class="af"  style="top:44px;left:354px;">1</li>
-                                    <li id="s1_3_2" title="3排2号" class="af"  style="top:44px;left:376px;">2</li>
-                                    <li id="s1_3_4" title="3排4号" class="af"  style="top:44px;left:398px;">4</li>
-                                    <li id="s1_3_6" title="3排6号" class="af"  style="top:44px;left:420px;">6</li>
-                                    <li id="s1_3_8" title="3排8号" class="af"  style="top:44px;left:442px;">8</li>
-                                    <li id="s1_3_10" title="3排10号" class="af"  style="top:44px;left:464px;">10</li>
-                                    <li id="s1_3_12" title="3排12号" class="af"  style="top:44px;left:486px;">12</li>
-                                    <li id="s1_3_14" title="3排14号" class="af"  style="top:44px;left:508px;">14</li>
-                                    <li id="s1_3_16" title="3排16号" class="af"  style="top:44px;left:552px;">16</li>
-                                    <li id="s1_3_18" title="3排18号" class="af"  style="top:44px;left:574px;">18</li>
-                                    <li id="s1_4_4" title="4排4号" class="af"  style="top:66px;left:398px;">4</li>
-                                    <li id="s1_4_6" title="4排6号" class="af"  style="top:66px;left:420px;">6</li>
-                                    <li id="s1_4_8" title="4排8号" class="af"  style="top:66px;left:442px;">8</li>
-                                    <li id="s1_5_7" title="5排7号" class="af"  style="top:88px;left:288px;">7</li>
-                                    <li id="s1_5_5" title="5排5号" class="af"  style="top:88px;left:310px;">5</li>
-                                    <li id="s1_5_3" title="5排3号" class="af"  style="top:88px;left:332px;">3</li>
-                                    <li id="s1_5_1" title="5排1号" class="af"  style="top:88px;left:354px;">1</li>
-                                    <li id="s1_5_2" title="5排2号" class="af"  style="top:88px;left:376px;">2</li>
-                                    <li id="s1_5_4" title="5排4号" class="af"  style="top:88px;left:398px;">4</li>
-                                    <li id="s1_5_6" title="5排6号" class="af"  style="top:88px;left:420px;">6</li>
-                                    <li id="s1_5_8" title="5排8号" class="af"  style="top:88px;left:442px;">8</li>
-                                    <li id="s1_5_10" title="5排10号" class="af"  style="top:88px;left:464px;">10</li>
-                                    <li id="s1_5_12" title="5排12号" class="af"  style="top:88px;left:486px;">12</li>
-                                    <li id="s1_5_9" title="5排9号" class="af"  style="top:88px;left:266px;">9</li>
-                                    <li id="s1_5_11" title="5排11号" class="af"  style="top:88px;left:244px;">11</li>
-                                    <li id="s1_5_13" title="5排13号" class="af"  style="top:88px;left:222px;">13</li>
-                                    <li id="s1_4_10" title="4排10号" class="af"  style="top:66px;left:464px;">10</li>
-                                    <li id="s1_4_12" title="4排12号" class="af"  style="top:66px;left:486px;">12</li>
-                                    <li id="s1_4_14" title="4排14号" class="af"  style="top:66px;left:508px;">14</li>
-                                    <li id="s1_4_16" title="4排16号" class="af"  style="top:66px;left:552px;">16</li>
-                                    <li id="s1_4_18" title="4排18号" class="af"  style="top:66px;left:574px;">18</li>
-                                    <li id="s1_4_20" title="4排20号" class="af"  style="top:66px;left:596px;">20</li>
-                                    <li id="s1_5_21" title="5排21号" class="af"  style="top:88px;left:112px;">21</li>
-                                    <li id="s1_5_19" title="5排19号" class="af"  style="top:88px;left:134px;">19</li>
-                                    <li id="s1_5_17" title="5排17号" class="af"  style="top:88px;left:156px;">17</li>
-                                    <li id="s1_5_15" title="5排15号" class="af"  style="top:88px;left:200px;">15</li>
-                                    <li id="s1_5_14" title="5排14号" class="af"  style="top:88px;left:508px;">14</li>
-                                    <li id="s1_1_21" title="1排21号" class="af"  style="top:0px;left:112px;">21</li>
-                                    <li id="s1_1_8" title="1排8号" class="af"  style="top:0px;left:442px;">8</li>
-                                    <li id="s1_1_10" title="1排10号" class="af"  style="top:0px;left:464px;">10</li>
-                                    <li id="s1_1_12" title="1排12号" class="af"  style="top:0px;left:486px;">12</li>
-                                    <li id="s1_1_14" title="1排14号" class="af"  style="top:0px;left:508px;">14</li>
-                                    <li id="s1_1_16" title="1排16号" class="af"  style="top:0px;left:552px;">16</li>
-                                    <li id="s1_1_18" title="1排18号" class="af"  style="top:0px;left:574px;">18</li>
-                                    <li id="s1_1_20" title="1排20号" class="af"  style="top:0px;left:596px;">20</li>
-                                    <li id="s1_2_21" title="2排21号" class="af"  style="top:22px;left:112px;">21</li>
-                                    <li id="s1_2_19" title="2排19号" class="af"  style="top:22px;left:134px;">19</li>
-                                    <li id="s1_2_17" title="2排17号" class="af"  style="top:22px;left:156px;">17</li>
-                                    <li id="s1_1_6" title="1排6号" class="af"  style="top:0px;left:420px;">6</li>
-                                    <li id="s1_1_4" title="1排4号" class="af"  style="top:0px;left:398px;">4</li>
-                                    <li id="s1_1_2" title="1排2号" class="af"  style="top:0px;left:376px;">2</li>
-                                    <li id="s1_1_19" title="1排19号" class="af"  style="top:0px;left:134px;">19</li>
-                                    <li id="s1_1_17" title="1排17号" class="af"  style="top:0px;left:156px;">17</li>
-                                    <li id="s1_1_15" title="1排15号" class="af"  style="top:0px;left:200px;">15</li>
-                                    <li id="s1_1_13" title="1排13号" class="af"  style="top:0px;left:222px;">13</li>
-                                    <li id="s1_1_11" title="1排11号" class="af"  style="top:0px;left:244px;">11</li>
-                                    <li id="s1_1_9" title="1排9号" class="af"  style="top:0px;left:266px;">9</li>
-                                    <li id="s1_1_7" title="1排7号" class="af"  style="top:0px;left:288px;">7</li>
-                                    <li id="s1_1_5" title="1排5号" class="af"  style="top:0px;left:310px;">5</li>
-                                    <li id="s1_1_3" title="1排3号" class="af"  style="top:0px;left:332px;">3</li>
-                                    <li id="s1_1_1" title="1排1号" class="af"  style="top:0px;left:354px;">1</li>
-                                    <li id="s1_2_15" title="2排15号" class="af"  style="top:22px;left:200px;">15</li>
-                                    <li id="s1_2_13" title="2排13号" class="af"  style="top:22px;left:222px;">13</li>
-                                    <li id="s1_2_11" title="2排11号" class="af"  style="top:22px;left:244px;">11</li>
-                                    <li id="s1_2_18" title="2排18号" class="af"  style="top:22px;left:574px;">18</li>
-                                    <li id="s1_2_20" title="2排20号" class="af"  style="top:22px;left:596px;">20</li>
-                                    <li id="s1_3_21" title="3排21号" class="af"  style="top:44px;left:112px;">21</li>
-                                    <li id="s1_3_19" title="3排19号" class="af"  style="top:44px;left:134px;">19</li>
-                                    <li id="s1_3_17" title="3排17号" class="af"  style="top:44px;left:156px;">17</li>
-                                    <li id="s1_3_15" title="3排15号" class="af"  style="top:44px;left:200px;">15</li>
-                                    <li id="s1_3_13" title="3排13号" class="af"  style="top:44px;left:222px;">13</li>
-                                    <li id="s1_3_11" title="3排11号" class="af"  style="top:44px;left:244px;">11</li>
-                                    <li id="s1_3_9" title="3排9号" class="af"  style="top:44px;left:266px;">9</li>
-                                    <li id="s1_3_7" title="3排7号" class="af"  style="top:44px;left:288px;">7</li>
-                                    <li id="s1_2_16" title="2排16号" class="af"  style="top:22px;left:552px;">16</li>
-                                    <li id="s1_2_14" title="2排14号" class="af"  style="top:22px;left:508px;">14</li>
-                                    <li id="s1_2_12" title="2排12号" class="af"  style="top:22px;left:486px;">12</li>
-                                    <li id="s1_2_9" title="2排9号" class="af"  style="top:22px;left:266px;">9</li>
-                                    <li id="s1_2_7" title="2排7号" class="af"  style="top:22px;left:288px;">7</li>
-                                    <li id="s1_2_5" title="2排5号" class="af"  style="top:22px;left:310px;">5</li>
-                                    <li id="s1_2_3" title="2排3号" class="af"  style="top:22px;left:332px;">3</li>
-                                    <li id="s1_2_1" title="2排1号" class="af"  style="top:22px;left:354px;">1</li>
-                                    <li id="s1_2_2" title="2排2号" class="af"  style="top:22px;left:376px;">2</li>
-                                    <li id="s1_2_4" title="2排4号" class="af"  style="top:22px;left:398px;">4</li>
-                                    <li id="s1_2_6" title="2排6号" class="af"  style="top:22px;left:420px;">6</li>
-                                    <li id="s1_2_8" title="2排8号" class="af"  style="top:22px;left:442px;">8</li>
-                                    <li id="s1_2_10" title="2排10号" class="af"  style="top:22px;left:464px;">10</li>
-                                    <li id="s1_3_5" title="3排5号" class="af"  style="top:44px;left:310px;">5</li>
-                                    <li id="s1_5_16" title="5排16号" class="af"  style="top:88px;left:552px;">16</li>
-                                    <li id="s1_8_17" title="8排17号" class="af"  style="top:154px;left:156px;">17</li>
-                                    <li id="s1_8_12" title="8排12号" class="af"  style="top:154px;left:486px;">12</li>
-                                    <li id="s1_8_14" title="8排14号" class="af"  style="top:154px;left:508px;">14</li>
-                                    <li id="s1_8_16" title="8排16号" class="af"  style="top:154px;left:552px;">16</li>
-                                    <li id="s1_8_18" title="8排18号" class="af"  style="top:154px;left:574px;">18</li>
-                                    <li id="s1_8_20" title="8排20号" class="af"  style="top:154px;left:596px;">20</li>
-                                    <li id="s1_8_22" title="8排22号" class="af"  style="top:154px;left:618px;">22</li>
-                                    <li id="s1_9_21" title="9排21号" class="af"  style="top:176px;left:112px;">21</li>
-                                    <li id="s1_9_19" title="9排19号" class="af"  style="top:176px;left:134px;">19</li>
-                                    <li id="s1_9_17" title="9排17号" class="af"  style="top:176px;left:156px;">17</li>
-                                    <li id="s1_9_15" title="9排15号" class="af"  style="top:176px;left:200px;">15</li>
-                                    <li id="s1_8_10" title="8排10号" class="af"  style="top:154px;left:464px;">10</li>
-                                    <li id="s1_8_8" title="8排8号" class="af"  style="top:154px;left:442px;">8</li>
-                                    <li id="s1_8_6" title="8排6号" class="af"  style="top:154px;left:420px;">6</li>
-                                    <li id="s1_8_15" title="8排15号" class="af"  style="top:154px;left:200px;">15</li>
-                                    <li id="s1_8_13" title="8排13号" class="af"  style="top:154px;left:222px;">13</li>
-                                    <li id="s1_8_11" title="8排11号" class="af"  style="top:154px;left:244px;">11</li>
-                                    <li id="s1_8_9" title="8排9号" class="af"  style="top:154px;left:266px;">9</li>
-                                    <li id="s1_8_7" title="8排7号" class="af"  style="top:154px;left:288px;">7</li>
-                                    <li id="s1_8_5" title="8排5号" class="af"  style="top:154px;left:310px;">5</li>
-                                    <li id="s1_8_3" title="8排3号" class="af"  style="top:154px;left:332px;">3</li>
-                                    <li id="s1_8_1" title="8排1号" class="af"  style="top:154px;left:354px;">1</li>
-                                    <li id="s1_8_2" title="8排2号" class="af"  style="top:154px;left:376px;">2</li>
-                                    <li id="s1_8_4" title="8排4号" class="af"  style="top:154px;left:398px;">4</li>
-                                    <li id="s1_9_13" title="9排13号" class="af"  style="top:176px;left:222px;">13</li>
-                                    <li id="s1_9_11" title="9排11号" class="af"  style="top:176px;left:244px;">11</li>
-                                    <li id="s1_9_9" title="9排9号" class="af"  style="top:176px;left:266px;">9</li>
-                                    <li id="s1_9_20" title="9排20号" class="af"  style="top:176px;left:596px;">20</li>
-                                    <li id="s1_9_22" title="9排22号" class="af"  style="top:176px;left:618px;">22</li>
-                                    <li id="s1_10_23" title="10排23号" class="af"  style="top:220px;left:90px;">23</li>
-                                    <li id="s1_10_21" title="10排21号" class="af"  style="top:220px;left:112px;">21</li>
-                                    <li id="s1_10_19" title="10排19号" class="af"  style="top:220px;left:134px;">19</li>
-                                    <li id="s1_10_17" title="10排17号" class="af"  style="top:220px;left:156px;">17</li>
-                                    <li id="s1_10_15" title="10排15号" class="af"  style="top:220px;left:200px;">15</li>
-                                    <li id="s1_10_13" title="10排13号" class="af"  style="top:220px;left:222px;">13</li>
-                                    <li id="s1_10_11" title="10排11号" class="af"  style="top:220px;left:244px;">11</li>
-                                    <li id="s1_10_9" title="10排9号" class="af"  style="top:220px;left:266px;">9</li>
-                                    <li id="s1_9_18" title="9排18号" class="af"  style="top:176px;left:574px;">18</li>
-                                    <li id="s1_9_16" title="9排16号" class="af"  style="top:176px;left:552px;">16</li>
-                                    <li id="s1_9_14" title="9排14号" class="af"  style="top:176px;left:508px;">14</li>
-                                    <li id="s1_9_7" title="9排7号" class="af"  style="top:176px;left:288px;">7</li>
-                                    <li id="s1_9_5" title="9排5号" class="af"  style="top:176px;left:310px;">5</li>
-                                    <li id="s1_9_3" title="9排3号" class="af"  style="top:176px;left:332px;">3</li>
-                                    <li id="s1_9_1" title="9排1号" class="af"  style="top:176px;left:354px;">1</li>
-                                    <li id="s1_9_2" title="9排2号" class="af"  style="top:176px;left:376px;">2</li>
-                                    <li id="s1_9_4" title="9排4号" class="af"  style="top:176px;left:398px;">4</li>
-                                    <li id="s1_9_6" title="9排6号" class="af"  style="top:176px;left:420px;">6</li>
-                                    <li id="s1_9_8" title="9排8号" class="af"  style="top:176px;left:442px;">8</li>
-                                    <li id="s1_9_10" title="9排10号" class="af"  style="top:176px;left:464px;">10</li>
-                                    <li id="s1_9_12" title="9排12号" class="af"  style="top:176px;left:486px;">12</li>
-                                    <li id="s1_10_7" title="10排7号" class="af"  style="top:220px;left:288px;">7</li>
-                                    <li id="s1_5_18" title="5排18号" class="af"  style="top:88px;left:574px;">18</li>
-                                    <li id="s1_6_2" title="6排2号" class="af"  style="top:110px;left:376px;">2</li>
-                                    <li id="s1_6_4" title="6排4号" class="af"  style="top:110px;left:398px;">4</li>
-                                    <li id="s1_6_6" title="6排6号" class="af"  style="top:110px;left:420px;">6</li>
-                                    <li id="s1_6_8" title="6排8号" class="af"  style="top:110px;left:442px;">8</li>
-                                    <li id="s1_6_10" title="6排10号" class="af"  style="top:110px;left:464px;">10</li>
-                                    <li id="s1_6_12" title="6排12号" class="af"  style="top:110px;left:486px;">12</li>
-                                    <li id="s1_6_14" title="6排14号" class="af"  style="top:110px;left:508px;">14</li>
-                                    <li id="s1_6_16" title="6排16号" class="af"  style="top:110px;left:552px;">16</li>
-                                    <li id="s1_6_18"  title="6排18号" class="af"  style="top:110px;left:574px;">18</li>
-                                    <li id="s1_6_20" title="6排20号" class="af"  style="top:110px;left:596px;">20</li>
-                                    <li id="s1_6_1" title="6排1号" class="af"  style="top:110px;left:354px;">1</li>
-                                    <li id="s1_6_3" title="6排3号" class="af"  style="top:110px;left:332px;">3</li>
-                                    <li id="s1_6_5" title="6排5号" class="af"  style="top:110px;left:310px;">5</li>
-                                    <li id="s1_5_20" title="5排20号" class="af"  style="top:88px;left:596px;">20</li>
-                                    <li id="s1_6_23" title="6排23号" class="af"  style="top:110px;left:90px;">23</li>
-                                    <li id="s1_6_21" title="6排21号" class="af"  style="top:110px;left:112px;">21</li>
-                                    <li id="s1_6_19" title="6排19号" class="af"  style="top:110px;left:134px;">19</li>
-                                    <li id="s1_6_17" title="6排17号" class="af"  style="top:110px;left:156px;">17</li>
-                                    <li id="s1_6_15" title="6排15号" class="af"  style="top:110px;left:200px;">15</li>
-                                    <li id="s1_6_13" title="6排13号" class="af"  style="top:110px;left:222px;">13</li>
-                                    <li id="s1_6_11" title="6排11号" class="af"  style="top:110px;left:244px;">11</li>
-                                    <li id="s1_6_9" title="6排9号" class="af"  style="top:110px;left:266px;">9</li>
-                                    <li id="s1_6_7" title="6排7号" class="af"  style="top:110px;left:288px;">7</li>
-                                    <li id="s1_6_22" title="6排22号" class="af"  style="top:110px;left:618px;">22</li>
-                                    <li id="s1_7_23" title="7排23号" class="af"  style="top:132px;left:90px;">23</li>
-                                    <li id="s1_7_21" title="7排21号" class="af"  style="top:132px;left:112px;">21</li>
-                                    <li id="s1_7_8" title="7排8号" class="af"  style="top:132px;left:442px;">8</li>
-                                    <li id="s1_7_10" title="7排10号" class="af"  style="top:132px;left:464px;">10</li>
-                                    <li id="s1_7_12" title="7排12号" class="af"  style="top:132px;left:486px;">12</li>
-                                    <li id="s1_7_14" title="7排14号" class="af"  style="top:132px;left:508px;">14</li>
-                                    <li id="s1_7_16" title="7排16号" class="af"  style="top:132px;left:552px;">16</li>
-                                    <li id="s1_7_18" title="7排18号" class="af"  style="top:132px;left:574px;">18</li>
-                                    <li id="s1_7_20" title="7排20号" class="af"  style="top:132px;left:596px;">20</li>
-                                    <li id="s1_7_22" title="7排22号" class="af"  style="top:132px;left:618px;">22</li>
-                                    <li id="s1_8_23" title="8排23号" class="af"  style="top:154px;left:90px;">23</li>
-                                    <li id="s1_8_21" title="8排21号" class="af"  style="top:154px;left:112px;">21</li>
-                                    <li id="s1_7_6" title="7排6号" class="af"  style="top:132px;left:420px;">6</li>
-                                    <li id="s1_7_4" title="7排4号" class="af"  style="top:132px;left:398px;">4</li>
-                                    <li id="s1_7_2" title="7排2号" class="af"  style="top:132px;left:376px;">2</li>
-                                    <li id="s1_7_19" title="7排19号" class="af"  style="top:132px;left:134px;">19</li>
-                                    <li id="s1_7_17" title="7排17号" class="af"  style="top:132px;left:156px;">17</li>
-                                    <li id="s1_7_15" title="7排15号" class="af"  style="top:132px;left:200px;">15</li>
-                                    <li id="s1_7_13" title="7排13号" class="af"  style="top:132px;left:222px;">13</li>
-                                    <li id="s1_7_11" title="7排11号" class="af"  style="top:132px;left:244px;">11</li>
-                                    <li id="s1_7_9" title="7排9号" class="af"  style="top:132px;left:266px;">9</li>
-                                    <li id="s1_7_7" title="7排7号" class="af"  style="top:132px;left:288px;">7</li>
-                                    <li id="s1_7_5" title="7排5号" class="af"  style="top:132px;left:310px;">5</li>
-                                    <li id="s1_7_3" title="7排3号" class="af"  style="top:132px;left:332px;">3</li>
-                                    <li id="s1_7_1" title="7排1号" class="af"  style="top:132px;left:354px;">1</li>
-                                    <li id="s1_8_19" title="8排19号" class="af"  style="top:154px;left:134px;">19</li>
-                                </ul> 
-                                <p class="anum" onclick = chooseSeatRow style="top:286px;left:24px;">13</p> 
-                                <p class="anum" onclick = chooseSeatRow style="top:286px;left:684px;">13</p>
-                                <p class="anum" onclick = chooseSeatRow style="top:264px;left:24px;">12</p>
-                                <p class="anum" onclick = chooseSeatRow style="top:264px;left:684px;">12</p>
-                                <p class="anum" onclick = chooseSeatRow style="top:308px;left:24px;">14</p>
-                                <p class="anum" onclick = chooseSeatRow style="top:308px;left:684px;">14</p>
-                                <p class="anum" onclick = chooseSeatRow style="top:220px;left:24px;">10</p>
-                                <p class="anum" onclick = chooseSeatRow style="top:220px;left:684px;">10</p>
-                                <p class="anum" onclick = chooseSeatRow style="top:242px;left:24px;">11</p>
-                                <p class="anum" onclick = chooseSeatRow style="top:242px;left:684px;">11</p>
-                                <p class="anum" onclick = chooseSeatRow style="top:352px;left:24px;">16</p>
-                                <p class="anum" onclick = chooseSeatRow style="top:352px;left:684px;">16</p>
-                                <p class="anum" onclick = chooseSeatRow style="top:374px;left:24px;">17</p>
-                                <p class="anum" onclick = chooseSeatRow style="top:374px;left:684px;">17</p>
-                                <p class="anum" onclick = chooseSeatRow style="top:396px;left:24px;">18</p>
-                                <p class="anum" onclick = chooseSeatRow style="top:396px;left:684px;">18</p>
-                                <p class="anum" onclick = chooseSeatRow style="top:330px;left:24px;">15</p>
-                                <p class="anum" onclick = chooseSeatRow style="top:330px;left:684px;">15</p>
-                                <p class="anum" onclick = chooseSeatRow style="top:44px;left:24px;">3</p>
-                                <p class="anum" onclick = chooseSeatRow style="top:44px;left:684px;">3</p>
-                                <p class="anum" onclick = chooseSeatRow style="top:66px;left:24px;">4</p>
-                                <p class="anum" onclick = chooseSeatRow style="top:66px;left:684px;">4</p>
-                                <p class="anum" onclick = chooseSeatRow style="top:88px;left:24px;">5</p>
-                                <p class="anum" onclick = chooseSeatRow style="top:88px;left:684px;">5</p>
-                                <p class="anum" onclick = chooseSeatRow style="top:0px;left:24px;">1</p>
-                                <p class="anum" onclick = chooseSeatRow style="top:0px;left:684px;">1</p>
-                                <p class="anum" onclick = chooseSeatRow style="top:22px;left:24px;">2</p>
-                                <p class="anum" onclick = chooseSeatRow style="top:22px;left:684px;">2</p>
-                                <p class="anum" onclick = chooseSeatRow style="top:154px;left:24px;">8</p>
-                                <p class="anum" onclick = chooseSeatRow style="top:154px;left:684px;">8</p>
-                                <p class="anum" onclick = chooseSeatRow style="top:176px;left:24px;">9</p>
-                                <p class="anum" onclick = chooseSeatRow style="top:176px;left:684px;">9</p>
-                                <p class="anum" onclick = chooseSeatRow style="top:110px;left:24px;">6</p>
-                                <p class="anum" onclick = chooseSeatRow style="top:110px;left:684px;">6</p>
-                                <p class="anum" onclick = chooseSeatRow style="top:132px;left:24px;">7</p>
-                                <p class="anum" onclick = chooseSeatRow style="top:132px;left:684px;">7</p>
-                            </div>
+                    <div class="col-sm-4">
+                        <div class="input-group" style="visibility:hidden">
+                            <span class="input-group-addon">A区可选座位：400</span>
+                            <input  type="number" min="0" max="400" class="form-control" >
                         </div>
+                        <div class="input-group">
+                            <span class="input-group-addon">A区可选座位：400</span>
+                            <input id="a" type="number" min="0" max="400" class="form-control" placeholder="请输入A区分配座位数" onblur="checkSeatNum(this)">
+                        </div>
+                        <div id="warningMessagea" class="alert alert-danger" style="display:none;">分配座位数大于可选座位数！</div>
+                        <br>
+                        <div class="input-group">
+                            <span class="input-group-addon">B区可选座位：400</span>
+                            <input id="b" type="number" min="0" max="400" class="form-control" placeholder="请输入B区分配座位数" onblur="checkSeatNum(this)">
+                        </div>
+                        <div id="warningMessageb" class="alert alert-danger" style="display:none;">分配座位数大于可选座位数！</div>
+                        <br>
+                        <div class="input-group">
+                            <span class="input-group-addon">C区可选座位：400</span>
+                            <input id="c" type="number" min="0" max="400" class="form-control" placeholder="请输入C区分配座位数" onblur="checkSeatNum(this)">
+                        </div>
+                        <div id="warningMessagec" class="alert alert-danger" style="display:none;">分配座位数大于可选座位数！</div>
+                        <br>
+                        <div class="input-group">
+                            <span class="input-group-addon">D区可选座位：400</span>
+                            <input id="d" type="number" min="0" max="400" class="form-control" placeholder="请输入D区分配座位数" onblur="checkSeatNum(this)">
+                        </div>
+                        <div id="warningMessaged" class="alert alert-danger" style="display:none;">分配座位数大于可选座位数！</div>
+                        <br>
+                        <div class="input-group">
+                            <span class="input-group-addon">E区可选座位：400</span>
+                            <input id="e" type="number" min="0" max="400" class="form-control" placeholder="请输入E区分配座位数" onblur="checkSeatNum(this)">
+                        </div>
+                        <div id="warningMessagee" class="alert alert-danger" style="display:none;">分配座位数大于可选座位数！</div>
+                        <br>
+                        <div id="warningMessagef" class="alert alert-danger" style="display:none;">分配座位数大于可选座位数！</div>
+                        <br>
+                        <button type="button" class="btn btn-primary" data-toggle="button" onclick="confirmMessage()">确定</button>
+                        <div id="successMessage" class="alert alert-success" style="display:none;">座位信息已保存</div>
+                        <div id="warningMessage" class="alert alert-danger" style="display:none;">座位信息有误！</div>
                     </div>
                 </div>
             </div>
+            <script type="text/javascript">
+            function checkSeatNum(a)
+            {
+                document.getElementById("warningMessage"+a.id).setAttribute('style', 'display:none');
+                if(parseInt(a.value)>400){
+                    a.value = "";
+                    document.getElementById("warningMessage"+a.id).setAttribute('style', 'display:block');
+                }
+            }
+            function confirmMessage()
+            {
+                if($("#a").val()!="" && $("#b").val()!="" && $("#c").val()!="" && $("#d").val()!="" && $("#e").val()!=""){
+                    document.getElementById("warningMessage").setAttribute('style', 'display:none'); 
+                    $("#seat-distribution-input").val("sA_"+$("#a").val()+"sB_"+$("#b").val()+"sC_"+$("#c").val()+"sD_"+$("#d").val()+"sE_"+$("#e").val());
+                    $("#input-total_tickets").val(parseInt($("#a").val())+parseInt($("#b").val())+parseInt($("#c").val())+parseInt($("#d").val())+parseInt($("#e").val()));
+                    document.getElementById("successMessage").setAttribute('style', 'display:block'); 
+                }
+                else{
+                    document.getElementById("successMessage").setAttribute('style', 'display:none'); 
+                    document.getElementById("warningMessage").setAttribute('style', 'display:block'); 
+                }
+            }
+            </script>
+
+			<div class="form-group" id="seat-distribution" style="display: none;">
+                <input type="text" name="seat-distribution-input" class="form-control" id="seat-distribution-input" style="display:none;">
+                <label class="col-sm-2 control-label">座位具体分配</label>
+                <div class="col-sm-4" >
+                    <select id="selectArea" class="form-control" onclick="clickSelect()">
+                        <option value ="0">池座</option>
+                        <option value ="1">一层</option>
+                        <option value ="2">二层</option>
+                        <option value ="3">三层</option>
+                    </select>
+                </div>
+                <div class="col-sm-4" ></div>
+                <div class="col-sm-2" >
+                    <dl>
+                        <dt>未选座位：</dt>
+                            <div class="introaf"></div>
+                        <dt>已选座位：</dt>
+                            <div class="introas"></div>
+                    </dl>
+                </div>
+                        
+                
+                <label class="col-sm-2 control-label"></label>
+                <div class="col-sm-10" style="text-align:center;">
+                    
+                    <div id="seatMap" class="selseatbgleftzi">
+                        <div id="seatMapData" style="padding-left:100px;">
+                            <ul id="seatMapData_ul" style="list-style-type:none">
+                            </ul> 
+                        </div>
+                    </div>
+                </div>
+                
+            </div>
 			
-                <div class="form-group">
+            <div class="form-group">
                 <div class="col-sm-offset-2 col-sm-10">
                     <button type="button" onclick="publishActivity();" class="btn btn-primary" id="publishBtn">发布</button>
                     <button type="submit" class="btn btn-default" id="saveBtn">暂存</button>

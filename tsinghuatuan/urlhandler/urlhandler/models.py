@@ -24,6 +24,7 @@ class Activity(models.Model):
     pic_url = models.CharField(max_length=255)
     remain_tickets = models.IntegerField()
     menu_url = models.CharField(max_length=255, null=True)
+    stage = models.IntegerField(default=0)
     # Something about status:
     # -1: deleted
     # 0: saved but not published
@@ -40,6 +41,9 @@ class Ticket(models.Model):
     seat = models.CharField(max_length=255)
     row = models.IntegerField(default=0, null=True)
     col = models.IntegerField(default=0,  null=True)
+    wish1 = models.IntegerField(default=0)
+    wish2 = models.IntegerField(default=0)
+    wish3 = models.IntegerField(default=0)
     # Something about isUsed
     # 0: ticket order is cancelled
     # 1: ticket order is valid

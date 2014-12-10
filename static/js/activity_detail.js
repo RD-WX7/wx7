@@ -66,7 +66,8 @@ var dateInterfaceMap = {
     'book_end': 'time',
     'pic_url': 'value',
     'total_tickets': 'value',
-    'seat_status': 'value'
+    'seat_status': 'value',
+    'menu_url': 'value'
 }, lockMap = {
     'value': function(dom, lock) {
         dom.prop('disabled', lock);
@@ -365,6 +366,7 @@ function beforeSubmit(formData, jqForm, options) {
         'pic_url': '活动配图',
         'book_start': '订票开始时间',
         'book_end': '订票结束时间',
+        'menu_url': '活动节目单',
         'seat_status': '座位分配设置'
     }, lackArray = [], dateArray = [
         'start_time', 'end_time', 'book_start', 'book_end'
@@ -382,7 +384,6 @@ function beforeSubmit(formData, jqForm, options) {
         }
     }
     if (lackArray.length > 0) {
-		alert(lackArray);
         setResult('以下字段是必须的，请补充完整后再提交：\r\n' + lackArray.join('、'));
         $('#continueBtn').click(function() {
             showForm();

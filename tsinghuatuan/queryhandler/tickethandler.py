@@ -205,7 +205,6 @@ def response_book_ticket(msg):
         key = received_msg[1]
     else:
         return get_reply_text_xml(msg, get_text_usage_book_ticket())
-
     now = datetime.datetime.fromtimestamp(get_msg_create_time(msg))
     activities = Activity.objects.filter(status=1, book_end__gte=now, book_start__lte=now, key=key)
     if not activities.exists():
@@ -245,25 +244,18 @@ def book_ticket(user, key, now):
             return None
 
         next_seat = ''
-        if activity.seat_status == 1:
-            b_count = Ticket.objects.filter(activity=activity, seat='B', status__gt=0).count()
-            c_count = Ticket.objects.filter(activity=activity, seat='C', status__gt=0).count()
-            if b_count <= c_count:
-                next_seat = 'B'
-            else:
-                next_seat = 'C'
-
-        if not tickets.exists():
-            Activity.objects.filter(id=activity.id).update(remain_tickets=F('remain_tickets')-1)
-            ticket = Ticket.objects.create(
-                stu_id=user.stu_id,
-                activity=activity,
-                unique_id=random_string,
-                status=1,
-                seat=next_seat,
-                row=0,
-                col=0
-            )
+        if activity.seat_status == 1 or activity.seat_status == 2:
+            if not tickets.exists():
+                Activity.objects.filter(id=activity.id).update(remain_tickets=F('remain_tickets')-1)
+                ticket = Ticket.objects.create(
+                    stu_id=user.stu_id,
+                    activity=activity,
+                    unique_id=random_string,
+                    status=1,
+                    seat=next_seat,
+                    row=0,
+                    col=0
+                )
             return ticket
         elif tickets[0].status == 0:
             Activity.objects.filter(id=activity.id).update(remain_tickets=F('remain_tickets')-1)
@@ -339,6 +331,7 @@ def check_book_event(msg):
 def response_book_event(msg):
     fromuser = get_msg_from(msg)
     user = get_user(fromuser)
+
     if user is None:
         return get_reply_text_xml(msg, get_text_unbinded_book_ticket(fromuser))
 
@@ -347,6 +340,7 @@ def response_book_event(msg):
     cmd_list = get_msg_event_key(msg).split('_')
     activity_id = int(cmd_list[2])
     activities = Activity.objects.filter(id=activity_id, status=1, end_time__gt=now)
+
     if activities.exists():
         activity = activities[0]
     else:
@@ -356,11 +350,14 @@ def response_book_event(msg):
         return get_reply_text_xml(msg, get_text_book_ticket_future(activity, now))
 
     tickets = Ticket.objects.filter(stu_id=user.stu_id, activity=activity, status__gt=0)
+ 
     if tickets.exists():
         return get_reply_single_ticket(msg, tickets[0], now, get_text_existed_book_event())
     if activity.book_end < now:
         return get_reply_text_xml(msg, get_text_timeout_book_event())
+
     ticket = book_ticket(user, activity.key, now)
+
     if ticket is None:
         return get_reply_text_xml(msg, get_text_fail_book_ticket(activities[0], now))
     else:

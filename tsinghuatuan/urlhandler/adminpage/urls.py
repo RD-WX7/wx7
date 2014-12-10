@@ -20,4 +20,5 @@ urlpatterns = patterns('',
                        url(r'^menu/adjust/$', 'adminpage.views.adjust_menu_view'),
                        url(r'^menu/get/$', 'adminpage.views.custom_menu_get'),
                        url(r'^menu/submit/$', 'adminpage.views.custom_menu_modify_post'),
+                       url(r'^upload/$','adminpage.views.upload_img'),
                        )

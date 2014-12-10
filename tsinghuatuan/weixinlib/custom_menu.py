@@ -8,9 +8,13 @@ import datetime
 
 
 def get_custom_menu():
+    print '4'
     access_token = get_access_token()
+    print '5'
     url = WEIXIN_URLS['get_custom_menu'](access_token)
+    print '2'
     res = http_get(url)
+    print '3'
     rjson = json.loads(res)
     return rjson.get('menu', {}).get('button', [])
 

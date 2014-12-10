@@ -31,6 +31,7 @@ def check_weixin_signature(signature, timestamp, nonce):
 
 def get_access_token():
     url = WEIXIN_URLS['access_token']()
+    print url
     res = http_get(url)
     rjson = json.loads(res)
     if 'errorcode' in rjson:
